@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2023-11-15-init-db" author="ivanuil">
+
+        <createTable tableName="subject">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="course" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createSequence sequenceName="subject_seq" incrementBy="1" startValue="1"/>
+
+        <createIndex tableName="subject" indexName="idx_subject_course">
+            <column name="course"/>
+        </createIndex>
+
+        <createTable tableName="folder">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="subject_id" type="BIGINT"/>
+            <column name="type" type="VARCHAR"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="folder"
+                                 baseColumnNames="subject_id"
+                                 constraintName="fk_folder_subject_id"
+                                 referencedTableName="subject"
+                                 referencedColumnNames="id"/>
+
+        <createIndex tableName="folder" indexName="idx_folder_subject_id">
+            <column name="subject_id"/>
+        </createIndex>
+
+        <createTable tableName="post">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="folder_id" type="BIGINT"/>
+            <column name="creation_time" type="TIMESTAMP"/>
+            <column name="text" type="VARCHAR"/>
+<!--            TODO: add attachment-->
+        </createTable>
+
+        <createSequence sequenceName="post_seq" incrementBy="1" startValue="1"/>
+
+        <addForeignKeyConstraint baseTableName="post"
+                                 baseColumnNames="folder_id"
+                                 constraintName="fk_post_folder_id"
+                                 referencedTableName="folder"
+                                 referencedColumnNames="id"/>
+
+        <createIndex tableName="post" indexName="idx_post_subject_id">
+            <column name="folder_id"/>
+        </createIndex>
+
+        <createTable tableName="comment">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="post_id" type="BIGINT"/>
+            <column name="creation_time" type="TIMESTAMP"/>
+            <column name="text" type="VARCHAR">
+                    <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createSequence sequenceName="comment_seq" incrementBy="1" startValue="1"/>
+
+        <addForeignKeyConstraint baseTableName="comment"
+                                 baseColumnNames="post_id"
+                                 constraintName="fk_comment_post_id"
+                                 referencedTableName="post"
+                                 referencedColumnNames="id"/>
+
+        <createIndex tableName="comment" indexName="idx_comment_post_id">
+            <column name="post_id"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>
