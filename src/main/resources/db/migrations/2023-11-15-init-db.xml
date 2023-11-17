@@ -33,6 +33,8 @@
             <column name="type" type="VARCHAR"/>
         </createTable>
 
+        <createSequence sequenceName="folder_seq" incrementBy="1" startValue="1"/>
+
         <addForeignKeyConstraint baseTableName="folder"
                                  baseColumnNames="subject_id"
                                  constraintName="fk_folder_subject_id"
