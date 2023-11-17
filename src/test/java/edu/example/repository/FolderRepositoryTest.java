@@ -1,5 +1,6 @@
 package edu.example.repository;
 
+import edu.example.MinioTestConfig;
 import edu.example.PostgresTestConfig;
 import edu.example.model.Folder;
 import edu.example.model.FolderType;
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-@ContextConfiguration(initializers = PostgresTestConfig.Initializer.class)
+@ContextConfiguration(initializers = {MinioTestConfig.Initializer.class, PostgresTestConfig.Initializer.class})
 public class FolderRepositoryTest {
 
     @Autowired

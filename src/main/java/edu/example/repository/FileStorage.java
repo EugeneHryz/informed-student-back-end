@@ -1,7 +1,6 @@
 package edu.example.repository;
 
 import io.minio.*;
-import io.minio.errors.*;
 import io.minio.messages.Item;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
@@ -9,25 +8,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 @Component
-public class FilesRepository {
+public class FileStorage {
 
     private final MinioClient minioClient;
 
     private String bucketName = "data";
 
-    public FilesRepository(@Value("${minio.datasource.url}") String minioURL,
-                           @Value("${minio.datasource.username}") String minioUsername,
-                           @Value("${minio.datasource.password}") String minioPassword,
-                           @Value("${minio.bucket-name}") String bucketName) {
+    public FileStorage(@Value("${minio.datasource.url}") String minioURL,
+                       @Value("${minio.datasource.username}") String minioUsername,
+                       @Value("${minio.datasource.password}") String minioPassword,
+                       @Value("${minio.bucket-name}") String bucketName) {
         this.bucketName = bucketName;
 
         minioClient = MinioClient.builder()

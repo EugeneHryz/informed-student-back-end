@@ -31,4 +31,8 @@ public class Post {
     @Column
     private String text;
 
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "file_id")
+    private FileModel file;
+
 }

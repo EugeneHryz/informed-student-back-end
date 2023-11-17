@@ -1,5 +1,6 @@
 package edu.example.repository;
 
+import edu.example.MinioTestConfig;
 import edu.example.PostgresTestConfig;
 import edu.example.model.Subject;
 import org.junit.jupiter.api.AfterEach;
@@ -12,7 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-@ContextConfiguration(initializers = PostgresTestConfig.Initializer.class)
+@ContextConfiguration(initializers = {MinioTestConfig.Initializer.class, PostgresTestConfig.Initializer.class})
 public class SubjectRepositoryTest {
 
     @Autowired

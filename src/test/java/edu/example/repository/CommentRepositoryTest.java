@@ -1,5 +1,6 @@
 package edu.example.repository;
 
+import edu.example.MinioTestConfig;
 import edu.example.PostgresTestConfig;
 import edu.example.model.*;
 import org.junit.jupiter.api.AfterEach;
@@ -14,7 +15,7 @@ import java.sql.Timestamp;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-@ContextConfiguration(initializers = PostgresTestConfig.Initializer.class)
+@ContextConfiguration(initializers = {MinioTestConfig.Initializer.class, PostgresTestConfig.Initializer.class})
 public class CommentRepositoryTest {
 
     @Autowired
@@ -42,7 +43,7 @@ public class CommentRepositoryTest {
         var subject = subjectRepository.save(new Subject(0L, "physics", 3));
         var folder = folderRepository.save(new Folder(0L, subject, FolderType.TEST));
         var post = postRepository.save(new Post(0L, folder,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post text"));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post text", null));
 
         // when
         var newComment = commentRepository.save(new Comment(0L, post,
@@ -61,14 +62,14 @@ public class CommentRepositoryTest {
         var folder = folderRepository.save(new Folder(0L, subject, FolderType.TEST));
 
         var post1 = postRepository.save(new Post(0L, folder,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post1 text"));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post1 text", null));
         var comment1Post1 = commentRepository.save(new Comment(0L, post1,
                 Timestamp.valueOf("1970-01-01 00:00:00"), "Comment1 text"));
         var comment2Post1 = commentRepository.save(new Comment(0L, post1,
                 Timestamp.valueOf("1970-01-01 00:00:00"), "Comment2 text"));
 
         var post2 = postRepository.save(new Post(0L, folder,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post2 text"));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post2 text", null));
         var comment1Post2 = commentRepository.save(new Comment(0L, post2,
                 Timestamp.valueOf("1970-01-01 00:00:00"), "Comment3 text"));
 
