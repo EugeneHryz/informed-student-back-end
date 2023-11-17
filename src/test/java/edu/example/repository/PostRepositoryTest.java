@@ -53,4 +53,28 @@ public class PostRepositoryTest {
         assertEquals("Post text", newPost.getText());
     }
 
+    @Test
+    public void getPostByFolder() {
+        // given
+        var subject = subjectRepository.save(new Subject(0L, "physics", 3));
+
+        var folderTest = folderRepository.save(new Folder(0L, subject, FolderType.TEST));
+        var postTest1 = postRepository.save(new Post(0L, folderTest,
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post1 text"));
+        var postTest2 = postRepository.save(new Post(0L, folderTest,
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post2 text"));
+
+        var folderNotes = folderRepository.save(new Folder(0L, subject, FolderType.NOTES));
+        var postNotes3 = postRepository.save(new Post(0L, folderNotes,
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post3 text"));
+
+        // when
+        var result = postRepository.getPostsByFolderOrderByCreatedAt(folderTest);
+
+        // then
+        assertEquals(2, result.size());
+        assertEquals(postTest1.getId(), result.get(0).getId());
+        assertEquals(postTest2.getId(), result.get(1).getId());
+    }
+
 }
