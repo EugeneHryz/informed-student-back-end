@@ -49,6 +49,7 @@
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
+            <column name="post_id" type="BIGINT"/>
             <column name="original_name" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
@@ -66,7 +67,6 @@
             <column name="folder_id" type="BIGINT"/>
             <column name="creation_time" type="TIMESTAMP"/>
             <column name="text" type="VARCHAR"/>
-            <column name="file_id" type="BIGINT"/>
         </createTable>
 
         <createSequence sequenceName="post_seq" incrementBy="1" startValue="1"/>
@@ -77,10 +77,10 @@
                                  referencedTableName="folder"
                                  referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseTableName="post"
-                                 baseColumnNames="file_id"
-                                 constraintName="fk_post_file_id"
-                                 referencedTableName="file"
+        <addForeignKeyConstraint baseTableName="file"
+                                 baseColumnNames="post_id"
+                                 constraintName="fk_file_post_id"
+                                 referencedTableName="post"
                                  referencedColumnNames="id"/>
 
         <createIndex tableName="post" indexName="idx_post_subject_id">

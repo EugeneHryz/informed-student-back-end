@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
+import java.util.List;
 
 import java.sql.Timestamp;
 
@@ -43,10 +44,10 @@ public class FileRepositoryTest {
         var subject = subjectRepository.save(new Subject(0L, "physics", 3));
         var folder = folderRepository.save(new Folder(0L, subject, FolderType.TEST));
         var post = postRepository.save(new Post(0L, folder,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post text", null));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post text"));
 
         // when
-        var newFile = fileRepository.save(new FileModel(0L, "original", "savedBy"));
+        var newFile = fileRepository.save(new FileModel(0L, post, "original", "savedBy"));
 
         // then
         assertEquals("original", newFile.getOriginalName());

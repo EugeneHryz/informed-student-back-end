@@ -17,6 +17,10 @@ public class FileModel {
     @SequenceGenerator(name = "file_seq", sequenceName = "file_seq", allocationSize = 1)
     private Long id;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
+
     @Column(name = "original_name")
     private String originalName;
 
