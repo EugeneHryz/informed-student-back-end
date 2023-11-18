@@ -2,6 +2,9 @@ package edu.example.repository;
 
 import edu.example.MinioTestConfig;
 import edu.example.PostgresTestConfig;
+import edu.example.repository.exception.FileReadException;
+import edu.example.repository.exception.FileWriteException;
+import io.minio.errors.ErrorResponseException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,14 +16,14 @@ import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
 import java.io.*;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ContextConfiguration(initializers = {MinioTestConfig.Initializer.class, PostgresTestConfig.Initializer.class})
-public class FileStorageTest {
+public class MinioFileStorageTest {
 
     @Autowired
-    FileStorage fileStorage;
+    MinioFileStorage fileStorage;
 
     File testFile = new File("testFile.txt");
     File resultFile = new File("resultFile.txt");
@@ -36,7 +39,7 @@ public class FileStorageTest {
     }
 
     @AfterEach
-    public void deleteTestFiles() {
+    public void deleteTestFiles() throws FileWriteException {
         testFile.delete();
         resultFile.delete();
         for (String fileName : fileStorage.getObjectList())
@@ -44,7 +47,7 @@ public class FileStorageTest {
     }
 
     @Test
-    public void saveFile() throws IOException {
+    public void saveFile() throws IOException, FileWriteException {
         // when
         var inputStream = new FileInputStream(testFile);
         fileStorage.saveObject(testFile.getName(),
@@ -57,7 +60,7 @@ public class FileStorageTest {
     }
 
     @Test
-    public void getFile() throws IOException {
+    public void getFile() throws IOException, FileReadException, FileWriteException {
         // given
         var inputStream = new FileInputStream(testFile);
         fileStorage.saveObject(testFile.getName(),
@@ -78,6 +81,14 @@ public class FileStorageTest {
 
         // then
         assertTrue(FileUtils.contentEquals(testFile, resultFile));
+    }
+
+    @Test
+    public void getNonExistingFile() {
+        FileReadException exception = assertThrows(FileReadException.class,
+                () -> fileStorage.getObject("testFileu74921.txt"));
+
+        assertInstanceOf(ErrorResponseException.class, exception.getCause());
     }
 
 }
