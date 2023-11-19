@@ -36,4 +36,9 @@ public class Post {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<FileModel> files;
+
+    @OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Comment> comments;
 }

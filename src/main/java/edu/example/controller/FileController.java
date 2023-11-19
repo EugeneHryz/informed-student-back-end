@@ -21,6 +21,7 @@ public class FileController {
 
     @GetMapping
     public ResponseEntity<Resource> getFile(@RequestParam String filename) throws FileReadException {
+        var file = minioFileStorageService.getModel(filename);
 
         InputStream fileInputStream = minioFileStorageService.get(filename);
         if (fileInputStream == null) {
@@ -29,7 +30,7 @@ public class FileController {
 
         InputStreamResource resource = new InputStreamResource(fileInputStream);
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getOriginalName() + "\"")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
     }

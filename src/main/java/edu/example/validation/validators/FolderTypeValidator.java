@@ -1,6 +1,6 @@
 package edu.example.validation.validators;
 
-import edu.example.util.FolderType;
+import edu.example.model.FolderType;
 import edu.example.validation.constraints.FolderTypeConstraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

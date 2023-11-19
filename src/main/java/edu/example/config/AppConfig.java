@@ -11,8 +11,8 @@ public class AppConfig {
     @Bean
     public MinioClient minioClient(
             @Value("${minio.datasource.url}") String endpoint,
-            @Value("${minio.accessKey}") String accessKey,
-            @Value("${minio.secretKey}") String secretKey
+            @Value("${minio.datasource.username}") String accessKey,
+            @Value("${minio.datasource.password}") String secretKey
     ) {
         return MinioClient.builder()
                 .endpoint(endpoint)

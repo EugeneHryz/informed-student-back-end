@@ -7,12 +7,13 @@ import edu.example.dto.folder.FolderResponseDto;
 import edu.example.mapper.FolderMapper;
 import edu.example.model.Folder;
 import edu.example.service.FolderService;
-import edu.example.util.FolderType;
+import edu.example.model.FolderType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 
 @RestController
@@ -46,9 +47,15 @@ public class FolderController {
         return folderMapper.toFolderResponseDto(folderService.getFolder(id));
     }
 
+    @GetMapping("/types")
+    @Operation(description = "Receive existing types")
+    public List<String> getFolderTypes() {
+        return folderService.getFolderTypes();
+    }
+
     @GetMapping("/filterBySubject")
     @Operation(description = "Receive folders by subject")
-    public PageResponse<FolderResponseDto> findFoldersByCourse(@RequestBody @Valid FolderBySubjectRequestDto filter) {
+    public PageResponse<FolderResponseDto> getFoldersByCourse(@RequestBody @Valid FolderBySubjectRequestDto filter) {
         var result = folderService.getFoldersBySubject(filter.getPageNumber(), filter.getPageSize(), filter.getSubjectId());
 
         var response = new PageResponse<FolderResponseDto>();

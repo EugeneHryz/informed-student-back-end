@@ -5,14 +5,16 @@ import edu.example.model.FileModel;
 import edu.example.model.Post;
 import edu.example.repository.PostRepository;
 import edu.example.repository.exception.FileWriteException;
+import edu.example.util.AllowedFileExtension;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +43,14 @@ public class PostService {
         post.setText(text);
         List<FileModel> fileModels = new ArrayList<>();
         if (nonNull(files) && !files.isEmpty()) {
+            for (var file : files) {
+                try {
+                    AllowedFileExtension.caseIgnoreValueOf(FilenameUtils.getExtension(file.getOriginalFilename()));
+                } catch (Exception e) {
+                    throw new ConstraintViolationException(String.format("File extension %s not allowed",
+                            FilenameUtils.getExtension(file.getOriginalFilename())), null);
+                }
+            }
             try {
                 var savedFiles = fileStorageService.save(files);
                 for (var savedFile : savedFiles) {

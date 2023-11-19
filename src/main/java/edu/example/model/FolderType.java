@@ -1,4 +1,4 @@
-package edu.example.util;
+package edu.example.model;
 
 public enum FolderType {
     TEST,

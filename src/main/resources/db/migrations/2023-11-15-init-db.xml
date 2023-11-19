@@ -60,6 +60,10 @@
             </column>
         </createTable>
 
+        <createIndex tableName="file" indexName="idx_file_saved_by_name">
+            <column name="saved_by_name"/>
+        </createIndex>
+
         <createSequence sequenceName="file_seq" incrementBy="1" startValue="1"/>
 
         <createTable tableName="post">

@@ -1,6 +1,5 @@
 package edu.example.model;
 
-import edu.example.util.FolderType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

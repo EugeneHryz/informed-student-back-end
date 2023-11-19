@@ -1,5 +1,8 @@
 package edu.example.service;
 
+import edu.example.exception.EntityNotFoundException;
+import edu.example.model.FileModel;
+import edu.example.repository.FileRepository;
 import edu.example.repository.MinioFileStorage;
 import edu.example.repository.exception.FileReadException;
 import edu.example.repository.exception.FileWriteException;
@@ -23,6 +26,7 @@ public class MinioFileStorageService implements FileStorageService {
     private static final int MAX_ATTEMPTS_TO_GEN_FILENAME = 66;
 
     private final MinioFileStorage fileStorage;
+    private final FileRepository fileRepository;
 
     /**
      * save file in the Minio storage with file extension as prefix
@@ -33,14 +37,14 @@ public class MinioFileStorageService implements FileStorageService {
     private String saveFile(MultipartFile file) throws FileWriteException {
 
         String fileExt = FilenameUtils.getExtension(file.getOriginalFilename());
-        String generatedFileName = String.format("%s.%s", UUID.randomUUID(), fileExt);
+        String generatedFileName = String.format("%s/%s", fileExt, UUID.randomUUID());
 
         int tryCount = 0;
         while (fileStorage.isObjectExist(generatedFileName)) {
             if (tryCount++ > MAX_ATTEMPTS_TO_GEN_FILENAME) {
                 throw new RuntimeException("Object with generated name already exists. This is an internal error");
             }
-            generatedFileName = String.format("%s.%s", UUID.randomUUID(), fileExt);
+            generatedFileName = String.format("%s/%s", fileExt, UUID.randomUUID());
         }
         try {
             fileStorage.saveObject(generatedFileName, file.getSize(), file.getInputStream());
@@ -72,6 +76,11 @@ public class MinioFileStorageService implements FileStorageService {
     @Override
     public InputStream get(String filename) throws FileReadException {
         return fileStorage.getObject(filename);
+    }
+
+    @Override
+    public FileModel getModel(String filename) {
+        return fileRepository.findBySavedByName(filename).orElseThrow(() -> new EntityNotFoundException("File not found"));
     }
 
     @Override

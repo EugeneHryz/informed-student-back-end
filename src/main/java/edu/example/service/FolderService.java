@@ -2,7 +2,7 @@ package edu.example.service;
 
 import edu.example.exception.EntityNotFoundException;
 import edu.example.model.Folder;
-import edu.example.util.FolderType;
+import edu.example.model.FolderType;
 import edu.example.repository.FolderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,6 +10,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import java.util.Arrays;
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +31,10 @@ public class FolderService {
 
     public Folder getFolder(Long id) {
         return folderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Folder not found"));
+    }
+
+    public List<String> getFolderTypes() {
+        return Arrays.stream(FolderType.values()).map(FolderType::toString).toList();
     }
 
     public Folder createFolder(Long subjectId, FolderType folderType) {

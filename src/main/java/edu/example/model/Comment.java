@@ -20,7 +20,7 @@ public class Comment {
     @SequenceGenerator(name = "comment_seq", sequenceName = "comment_seq", allocationSize = 1)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
 
