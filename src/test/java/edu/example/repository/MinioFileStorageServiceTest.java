@@ -1,7 +1,7 @@
 package edu.example.repository;
 
-import edu.example.MinioTestConfig;
-import edu.example.PostgresTestConfig;
+import edu.example.config.MinioTestConfig;
+import edu.example.config.PostgresTestConfig;
 import edu.example.repository.exception.FileReadException;
 import edu.example.repository.exception.FileWriteException;
 import io.minio.errors.ErrorResponseException;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ContextConfiguration(initializers = {MinioTestConfig.Initializer.class, PostgresTestConfig.Initializer.class})
-public class MinioFileStorageTest {
+public class MinioFileStorageServiceTest {
 
     @Autowired
     MinioFileStorage fileStorage;

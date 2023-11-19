@@ -2,14 +2,14 @@ package edu.example.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "file")
-@Getter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class FileModel {
 
     @Id
@@ -17,7 +17,7 @@ public class FileModel {
     @SequenceGenerator(name = "file_seq", sequenceName = "file_seq", allocationSize = 1)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
 
@@ -26,5 +26,4 @@ public class FileModel {
 
     @Column(name = "saved_by_name")
     private String savedByName;
-
 }

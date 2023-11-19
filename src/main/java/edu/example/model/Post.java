@@ -1,9 +1,7 @@
 package edu.example.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -11,9 +9,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "post")
-@Getter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Post {
 
     @Id
@@ -21,8 +19,10 @@ public class Post {
     @SequenceGenerator(name = "post_seq", sequenceName = "post_seq", allocationSize = 1)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "folder_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Folder folder;
 
     @Column(name = "creation_time")
@@ -32,8 +32,13 @@ public class Post {
     @Column
     private String text;
 
-//    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "file_id")
-//    private List<FileModel> file;
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<FileModel> files;
 
+    @OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Comment> comments;
 }
