@@ -30,7 +30,9 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="subject_id" type="BIGINT"/>
-            <column name="type" type="VARCHAR"/>
+            <column name="type" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <createSequence sequenceName="folder_seq" incrementBy="1" startValue="1"/>
@@ -94,7 +96,7 @@
             <column name="post_id" type="BIGINT"/>
             <column name="creation_time" type="TIMESTAMP"/>
             <column name="text" type="VARCHAR">
-                    <constraints nullable="false"/>
+                <constraints nullable="false"/>
             </column>
         </createTable>
 

@@ -2,14 +2,14 @@ package edu.example.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "subject")
-@Getter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Subject {
 
     @Id
@@ -22,5 +22,4 @@ public class Subject {
 
     @Column
     private Integer course;
-
 }

@@ -1,7 +1,7 @@
 package edu.example.repository;
 
-import edu.example.MinioTestConfig;
-import edu.example.PostgresTestConfig;
+import edu.example.config.MinioTestConfig;
+import edu.example.config.PostgresTestConfig;
 import edu.example.model.Subject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

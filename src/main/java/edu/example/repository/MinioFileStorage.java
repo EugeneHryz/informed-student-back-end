@@ -6,32 +6,22 @@ import io.minio.*;
 import io.minio.errors.ErrorResponseException;
 import io.minio.messages.Item;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class MinioFileStorage {
 
+    @Value("${minio.bucket-name}")
+    private String bucketName;
+
     private final MinioClient minioClient;
-
-    private final String bucketName;
-
-    public MinioFileStorage(@Value("${minio.datasource.url}") String minioURL,
-                            @Value("${minio.datasource.username}") String minioUsername,
-                            @Value("${minio.datasource.password}") String minioPassword,
-                            @Value("${minio.bucket-name}") String bucketName) {
-        this.bucketName = bucketName;
-
-        minioClient = MinioClient.builder()
-                .endpoint(minioURL)
-                .credentials(minioUsername, minioPassword)
-                .build();
-    }
 
     @PostConstruct
     @SneakyThrows
@@ -103,5 +93,4 @@ public class MinioFileStorage {
         }
         return objectNameList;
     }
-
 }

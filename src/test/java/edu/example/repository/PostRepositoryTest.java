@@ -1,8 +1,9 @@
 package edu.example.repository;
 
-import edu.example.MinioTestConfig;
-import edu.example.PostgresTestConfig;
+import edu.example.config.MinioTestConfig;
+import edu.example.config.PostgresTestConfig;
 import edu.example.model.*;
+import edu.example.util.FolderType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ public class PostRepositoryTest {
 
         // when
         var newPost = postRepository.save(new Post(0L, folder,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post text"));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post text", null));
 
         // then
         assertEquals(folder.getId(), newPost.getFolder().getId());
@@ -57,13 +58,13 @@ public class PostRepositoryTest {
 
         var folderTest = folderRepository.save(new Folder(0L, subject, FolderType.TEST));
         var postTest1 = postRepository.save(new Post(0L, folderTest,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post1 text"));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post1 text", null));
         var postTest2 = postRepository.save(new Post(0L, folderTest,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post2 text"));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post2 text", null));
 
         var folderNotes = folderRepository.save(new Folder(0L, subject, FolderType.NOTES));
         var postNotes3 = postRepository.save(new Post(0L, folderNotes,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post3 text"));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post3 text", null));
 
         // when
         var result = postRepository.getPostsByFolderOrderByCreatedAt(folderTest);

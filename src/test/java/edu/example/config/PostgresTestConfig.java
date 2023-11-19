@@ -1,34 +1,33 @@
-package edu.example;
+package edu.example.config;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.time.Duration;
 
 @SpringBootTest
 @ContextConfiguration
-public class MinioTestConfig {
+public class PostgresTestConfig {
 
-    private static volatile MinIOContainer minIOContainer = null;
+    private static volatile PostgreSQLContainer<?> postgreSQLContainer = null;
 
-    private static MinIOContainer getMinIOContainer() {
-        MinIOContainer instance = minIOContainer;
+    private static PostgreSQLContainer<?> getPostgresContainer() {
+        PostgreSQLContainer<?> instance = postgreSQLContainer;
         if (instance == null) {
             synchronized (PostgreSQLContainer.class) {
-                instance = minIOContainer;
+                instance = postgreSQLContainer;
                 if (instance == null) {
-                    minIOContainer = instance = new MinIOContainer(
-                            "minio/minio:RELEASE.2023-09-04T19-57-37Z")
-                            .withUserName("username")
+                    postgreSQLContainer = instance = new PostgreSQLContainer<>("postgres:14.7")
+                            .withDatabaseName("local")
+                            .withUsername("username")
                             .withPassword("password")
                             .withStartupTimeout(Duration.ofSeconds(60))
                             .withReuse(true);
-                    minIOContainer.start();
+                    postgreSQLContainer.start();
                 }
             }
         }
@@ -39,18 +38,20 @@ public class MinioTestConfig {
 
         @Override
         public void initialize(ConfigurableApplicationContext applicationContext) {
-            var minIOContainer = getMinIOContainer();
+            var postgresContainer = getPostgresContainer();
 
-            var url = minIOContainer.getS3URL();
-            var username = minIOContainer.getUserName();
-            var password = minIOContainer.getPassword();
+            var jdbcUrl = postgresContainer.getJdbcUrl();
+            var username = postgresContainer.getUsername();
+            var password = postgresContainer.getPassword();
 
             TestPropertyValues.of(
-                    "minio.datasource.url=" + url,
-                    "minio.datasource.username=" + username,
-                    "minio.datasource.password=" + password
+                    "spring.datasource.url=" + jdbcUrl,
+                    "spring.datasource.username=" + username,
+                    "spring.datasource.password=" + password,
+                    "spring.datasource.driverClassName=" + "org.hibernate.dialect.PostgreSQLDialect"
             ).applyTo(applicationContext.getEnvironment());
         }
+
     }
 
 }
