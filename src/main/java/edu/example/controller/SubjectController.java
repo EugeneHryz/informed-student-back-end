@@ -1,7 +1,6 @@
 package edu.example.controller;
 
 import edu.example.dto.subject.CreateSubjectRequestDto;
-import edu.example.dto.subject.SubjectByCourseRequestDto;
 import edu.example.dto.subject.SubjectResponseDto;
 import edu.example.mapper.SubjectMapper;
 import edu.example.model.Subject;
@@ -11,7 +10,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import edu.example.dto.PageResponse;
+
+import java.util.List;
 
 
 @RestController
@@ -47,16 +47,10 @@ public class SubjectController {
 
     @GetMapping("/filterByCourse")
     @Operation(description = "Receive subjects by course")
-    public PageResponse<SubjectResponseDto> findSubjectsByCourse(@RequestBody @Valid SubjectByCourseRequestDto filter) {
-        var result = subjectService.getSubjectsByCourse(filter.getPageNumber(), filter.getPageSize(), filter.getCourse());
-
-        var response = new PageResponse<SubjectResponseDto>();
-        response.setPageSize(result.getSize());
-        response.setPageNumber(result.getNumber());
-        response.setTotalPages(result.getTotalPages());
-        response.setTotalSize(result.getTotalElements());
-        response.setContent(result.getContent().stream().map(subjectMapper::toSubjectResponseDto).toList());
-
-        return response;
+    public List<SubjectResponseDto> findSubjectsByCourse(@RequestParam Integer course) {
+        var result = subjectService.getSubjectsByCourse(course);
+        return result.stream()
+                .map(subjectMapper::toSubjectResponseDto)
+                .toList();
     }
 }

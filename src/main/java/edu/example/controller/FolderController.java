@@ -1,20 +1,19 @@
 package edu.example.controller;
 
-import edu.example.dto.PageResponse;
 import edu.example.dto.folder.CreateFolderRequestDto;
-import edu.example.dto.folder.FolderBySubjectRequestDto;
 import edu.example.dto.folder.FolderResponseDto;
+import edu.example.dto.folder.FolderTypeDto;
 import edu.example.mapper.FolderMapper;
 import edu.example.model.Folder;
-import edu.example.service.FolderService;
 import edu.example.model.FolderType;
+import edu.example.service.FolderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
+import java.util.List;
 
 @RestController
 @RequestMapping("/folder")
@@ -49,22 +48,18 @@ public class FolderController {
 
     @GetMapping("/types")
     @Operation(description = "Receive existing types")
-    public List<String> getFolderTypes() {
-        return folderService.getFolderTypes();
+    public List<FolderTypeDto> getFolderTypes() {
+        return folderService.getFolderTypes().stream()
+                .map(folderMapper::toFolderTypeDto)
+                .toList();
     }
 
     @GetMapping("/filterBySubject")
     @Operation(description = "Receive folders by subject")
-    public PageResponse<FolderResponseDto> getFoldersByCourse(@RequestBody @Valid FolderBySubjectRequestDto filter) {
-        var result = folderService.getFoldersBySubject(filter.getPageNumber(), filter.getPageSize(), filter.getSubjectId());
-
-        var response = new PageResponse<FolderResponseDto>();
-        response.setPageSize(result.getSize());
-        response.setPageNumber(result.getNumber());
-        response.setTotalPages(result.getTotalPages());
-        response.setTotalSize(result.getTotalElements());
-        response.setContent(result.getContent().stream().map(folderMapper::toFolderResponseDto).toList());
-
-        return response;
+    public List<FolderResponseDto> getFoldersBySubject(@RequestParam Long subjectId) {
+        var result = folderService.getFoldersBySubject(subjectId);
+        return result.stream()
+                .map(folderMapper::toFolderResponseDto)
+                .toList();
     }
 }

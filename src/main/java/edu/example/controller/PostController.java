@@ -2,7 +2,6 @@ package edu.example.controller;
 
 import edu.example.dto.PageResponse;
 import edu.example.dto.post.CreatePostRequestDto;
-import edu.example.dto.post.PostByFolderRequestDto;
 import edu.example.dto.post.PostResponseDto;
 import edu.example.mapper.PostMapper;
 import edu.example.model.Post;
@@ -54,8 +53,10 @@ public class PostController {
 
     @GetMapping("/filterByFolder")
     @Operation(description = "Receive posts by folder")
-    public PageResponse<PostResponseDto> findPostsByCourse(@RequestBody @Valid PostByFolderRequestDto filter) {
-        var result = postService.getPostsByFolder(filter.getPageNumber(), filter.getPageSize(), filter.getFolderId());
+    public PageResponse<PostResponseDto> findPostsByCourse(@RequestParam Long folderId,
+                                                           @RequestParam(defaultValue = "0") int page,
+                                                           @RequestParam(defaultValue = "5") int size) {
+        var result = postService.getPostsByFolder(page, size, folderId);
 
         var response = new PageResponse<PostResponseDto>();
         response.setPageSize(result.getSize());

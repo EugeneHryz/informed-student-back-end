@@ -11,5 +11,5 @@ public class FolderResponseDto {
 
     private Subject subject;
 
-    private String type;
+    private FolderTypeDto type;
 }
