@@ -5,11 +5,8 @@ import edu.example.model.Folder;
 import edu.example.model.FolderType;
 import edu.example.repository.FolderRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,20 +18,16 @@ public class FolderService {
     private final FolderRepository folderRepository;
     private final SubjectService subjectService;
 
-    public Page<Folder> getFoldersBySubject(int pageNumber, int pageSize, long subjectId) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(
-                Sort.Order.desc("id")
-        ));
-
-        return folderRepository.findBySubjectId(subjectId, pageable);
+    public List<Folder> getFoldersBySubject(long subjectId) {
+        return folderRepository.findBySubjectId(subjectId);
     }
 
     public Folder getFolder(Long id) {
         return folderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Folder not found"));
     }
 
-    public List<String> getFolderTypes() {
-        return Arrays.stream(FolderType.values()).map(FolderType::toString).toList();
+    public List<FolderType> getFolderTypes() {
+        return Arrays.asList(FolderType.values());
     }
 
     public Folder createFolder(Long subjectId, FolderType folderType) {

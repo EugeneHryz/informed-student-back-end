@@ -4,11 +4,9 @@ import edu.example.exception.EntityNotFoundException;
 import edu.example.model.Subject;
 import edu.example.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -17,12 +15,8 @@ public class SubjectService {
 
     private final SubjectRepository subjectRepository;
 
-    public Page<Subject> getSubjectsByCourse(int pageNumber, int pageSize, int course) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(
-                Sort.Order.desc("id")
-        ));
-
-        return subjectRepository.findSubjectsByCourse(course, pageable);
+    public List<Subject> getSubjectsByCourse(int course) {
+        return subjectRepository.findSubjectsByCourse(course);
     }
 
     public Subject getSubject(Long id) {
