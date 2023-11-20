@@ -4,11 +4,9 @@ import edu.example.exception.EntityNotFoundException;
 import edu.example.model.Comment;
 import edu.example.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -18,12 +16,8 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostService postService;
 
-    public Page<Comment> getCommentsByPost(int pageNumber, int pageSize, long postId) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(
-                Sort.Order.desc("createdAt")
-        ));
-
-        return commentRepository.findByPostId(postId, pageable);
+    public List<Comment> getCommentsByPost(long postId) {
+        return commentRepository.findByPostIdOrderByCreatedAt(postId);
     }
 
     public Comment getComment(Long id) {
