@@ -1,7 +1,5 @@
 package edu.example.controller;
 
-import edu.example.dto.PageResponse;
-import edu.example.dto.comment.CommentByPostRequestDto;
 import edu.example.dto.comment.CommentResponseDto;
 import edu.example.dto.comment.CreateCommentRequestDto;
 import edu.example.mapper.CommentMapper;
@@ -12,6 +10,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -47,16 +47,8 @@ public class CommentController {
 
     @GetMapping("/filterByPost")
     @Operation(description = "Receive comments by post")
-    public PageResponse<CommentResponseDto> findCommentsByPost(@RequestBody @Valid CommentByPostRequestDto filter) {
-        var result = commentService.getCommentsByPost(filter.getPageNumber(), filter.getPageSize(), filter.getPostId());
-
-        var response = new PageResponse<CommentResponseDto>();
-        response.setPageSize(result.getSize());
-        response.setPageNumber(result.getNumber());
-        response.setTotalPages(result.getTotalPages());
-        response.setTotalSize(result.getTotalElements());
-        response.setContent(result.getContent().stream().map(commentMapper::toCommentResponseDto).toList());
-
-        return response;
+    public List<CommentResponseDto> findCommentsByPost(@RequestParam Long postId) {
+        var result = commentService.getCommentsByPost(postId);
+        return result.stream().map(commentMapper::toCommentResponseDto).toList();
     }
 }
