@@ -1,6 +1,9 @@
 package edu.example.controller;
 
 import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import edu.example.repository.exception.FileReadException;
 import edu.example.service.MinioFileStorageService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +33,8 @@ public class FileController {
 
         InputStreamResource resource = new InputStreamResource(fileInputStream);
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getOriginalName() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +
+                        URLEncoder.encode(file.getOriginalName(), StandardCharsets.UTF_8) + "\"")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
     }
