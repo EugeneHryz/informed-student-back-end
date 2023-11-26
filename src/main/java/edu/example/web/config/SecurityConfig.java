@@ -30,8 +30,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 public class SecurityConfig {
+
+    private static final String[] ALLOWED_URL_PATTERNS = { "/auth/**", "/swagger-ui/**", "/v3/api-docs/**" };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, LogoutSuccessHandler logoutHandler,
@@ -42,7 +44,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .addFilterBefore(new JwtAuthenticationFilter(authManager), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests((auth) ->
-                        auth.requestMatchers("/auth/**")
+                        auth.requestMatchers(ALLOWED_URL_PATTERNS)
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())
