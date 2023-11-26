@@ -1,9 +1,9 @@
 package edu.example.repository;
 
-import edu.example.config.MinioTestConfig;
-import edu.example.config.PostgresTestConfig;
 import edu.example.repository.exception.FileReadException;
 import edu.example.repository.exception.FileWriteException;
+import edu.example.web.config.MinioTestConfig;
+import edu.example.web.config.PostgresTestConfig;
 import io.minio.errors.ErrorResponseException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;

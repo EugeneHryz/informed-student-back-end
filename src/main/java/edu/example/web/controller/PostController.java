@@ -1,4 +1,4 @@
-package edu.example.controller;
+package edu.example.web.controller;
 
 import edu.example.dto.PageResponse;
 import edu.example.dto.post.CreatePostRequestDto;
