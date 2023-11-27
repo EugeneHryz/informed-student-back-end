@@ -4,6 +4,7 @@ import edu.example.dto.auth.AuthUserDto;
 import edu.example.dto.auth.LoginRequestDto;
 import edu.example.dto.auth.RegisterRequestDto;
 import edu.example.exception.UnprocessableEntityException;
+import edu.example.model.Role;
 import edu.example.model.User;
 import edu.example.repository.UserRepository;
 import edu.example.web.security.jwt.JwtService;
@@ -38,6 +39,7 @@ public class AuthService {
         user.setEmail(registerRequest.getEmail());
         user.setUsername(registerRequest.getUsername());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setRole(Role.USER);
         userRepository.save(user);
 
         String generatedToken = jwtService.generateFromUser(user);

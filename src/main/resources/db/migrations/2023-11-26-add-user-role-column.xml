@@ -5,6 +5,13 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <includeAll path="db/migrations/"/>
+    <changeSet id="2023-11-26-add-user-role-column" author="emil">
+
+        <addColumn tableName="users">
+            <column name="role" type="VARCHAR">
+            </column>
+        </addColumn>
+
+    </changeSet>
 
 </databaseChangeLog>

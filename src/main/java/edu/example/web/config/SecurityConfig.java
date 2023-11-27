@@ -1,5 +1,6 @@
 package edu.example.web.config;
 
+import edu.example.model.Role;
 import edu.example.repository.UserRepository;
 import edu.example.service.TokenService;
 import edu.example.web.security.UserDetailsServiceImpl;
@@ -9,6 +10,7 @@ import edu.example.web.security.provider.DbAuthenticationProvider;
 import edu.example.web.security.provider.JwtAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -43,11 +45,11 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .addFilterBefore(new JwtAuthenticationFilter(authManager), UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests((auth) ->
-                        auth.requestMatchers(ALLOWED_URL_PATTERNS)
-                                .permitAll()
-                                .anyRequest()
-                                .authenticated())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(ALLOWED_URL_PATTERNS).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/folder/**", "/subject/**").hasAuthority(Role.MODERATOR.name())
+                        .anyRequest().authenticated()
+                )
                 .authenticationManager(authManager)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
