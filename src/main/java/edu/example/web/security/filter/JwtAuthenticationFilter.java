@@ -42,12 +42,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String tokenValue = authHeaderValue.substring(TOKEN_PREFIX.length());
 
             try {
-                Authentication autResult = authenticationManager.authenticate(new JwtAuthentication(tokenValue));
+                Authentication authResult = authenticationManager.authenticate(new JwtAuthentication(tokenValue));
 
                 SecurityContext context = this.securityContextHolderStrategy.createEmptyContext();
-                context.setAuthentication(autResult);
+                context.setAuthentication(authResult);
                 securityContextHolderStrategy.setContext(context);
-//                securityContextRepository.saveContext(context, request, response);
             } catch (AuthenticationException e) {
                 securityContextHolderStrategy.clearContext();
             }

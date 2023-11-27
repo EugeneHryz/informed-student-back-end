@@ -3,20 +3,21 @@ package edu.example.web.security;
 import edu.example.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class UserInfoDetails implements UserDetails {
 
     private final User user;
 
+    private final Set<GrantedAuthority> roles;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("USER"));
+        return roles;
     }
 
     @Override
@@ -49,7 +50,4 @@ public class UserInfoDetails implements UserDetails {
         return true;
     }
 
-    public User getUser(){
-        return this.user;
-    }
 }
