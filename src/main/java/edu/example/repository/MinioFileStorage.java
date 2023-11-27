@@ -36,6 +36,15 @@ public class MinioFileStorage {
         }
     }
 
+    /**
+     * Saves object (file) to storage.
+     * All object are saved to one bucket (${minio.bucket-name})
+     * @param objectName Name to save object by
+     * @param size Object size (bytes)
+     * @param object Object as a stream
+     * @return Response, holding data about written object
+     * @throws FileWriteException If a file writing error accrued (e.g. object with this name already exists in storage)
+     */
     public ObjectWriteResponse saveObject(String objectName, Long size, InputStream object) throws FileWriteException {
         try {
             return minioClient.putObject(PutObjectArgs.builder()
@@ -47,6 +56,9 @@ public class MinioFileStorage {
         }
     }
 
+    /**
+     * Checks if there is an object by this name in storage
+     */
     public boolean isObjectExist(String objectName) {
         try {
             minioClient.statObject(StatObjectArgs.builder()
