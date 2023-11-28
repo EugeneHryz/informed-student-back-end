@@ -33,7 +33,7 @@ public class FolderController {
             @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
             @ApiResponse(responseCode = "400", description = "Parsing / validation error"),
             @ApiResponse(responseCode = "404", description = "Subject not found"),
-            @ApiResponse(responseCode = "409", description = "Folder of this type and subject already exists")
+            @ApiResponse(responseCode = "409", description = "Duplicate folder")
     })
     public FolderResponseDto create(@RequestBody @Valid CreateFolderRequestDto createFolderRequestDto) {
         Folder folder = folderService.createFolder(

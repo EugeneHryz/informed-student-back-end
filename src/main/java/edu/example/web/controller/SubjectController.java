@@ -30,6 +30,7 @@ public class SubjectController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created successfully"),
             @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "409", description = "Duplicate subject"),
             @ApiResponse(responseCode = "400", description = "Parsing/validation error")
     })
     public SubjectResponseDto create(@RequestBody @Valid CreateSubjectRequestDto createSubjectRequestDto) {
