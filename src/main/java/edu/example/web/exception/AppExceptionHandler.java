@@ -1,5 +1,6 @@
 package edu.example.web.exception;
 
+import edu.example.exception.DuplicateEntityException;
 import edu.example.exception.EntityNotFoundException;
 import edu.example.exception.UnprocessableEntityException;
 import jakarta.validation.ConstraintViolationException;
@@ -46,6 +47,13 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UnprocessableEntityException.class)
     public ResponseEntity<Object> handleUnprocessableEntityException(UnprocessableEntityException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("error", ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(DuplicateEntityException.class)
+    public ResponseEntity<Object> handleDuplicateEntityException(DuplicateEntityException ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("error", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
