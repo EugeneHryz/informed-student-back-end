@@ -13,6 +13,6 @@ public class CreateSubjectRequestDto {
     private String name;
 
     @NotNull
-    @Range(max = Integer.MAX_VALUE)
+    @Range(min = 1, max = 6)
     private Integer course;
 }

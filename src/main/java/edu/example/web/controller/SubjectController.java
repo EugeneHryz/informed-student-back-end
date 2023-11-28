@@ -6,6 +6,8 @@ import edu.example.mapper.SubjectMapper;
 import edu.example.model.Subject;
 import edu.example.service.SubjectService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,11 @@ public class SubjectController {
 
     @PostMapping
     @Operation(description = "Create subject")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Created successfully"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "400", description = "Parsing/validation error")
+    })
     public SubjectResponseDto create(@RequestBody @Valid CreateSubjectRequestDto createSubjectRequestDto) {
         Subject subject = subjectService.createSubject(
                 createSubjectRequestDto.getName(),
@@ -35,18 +42,30 @@ public class SubjectController {
 
     @DeleteMapping("/{id}")
     @Operation(description = "Delete subject by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Subject not found"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised")
+    })
     public void delete(@PathVariable Long id) {
         subjectService.deleteSubject(id);
     }
 
     @GetMapping
     @Operation(description = "Receive subject by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Subject not found")
+    })
     public SubjectResponseDto get(@RequestParam Long id) {
         return subjectMapper.toSubjectResponseDto(subjectService.getSubject(id));
     }
 
     @GetMapping("/filterByCourse")
     @Operation(description = "Receive subjects by course")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Retrieved successfully")
+    })
     public List<SubjectResponseDto> findSubjectsByCourse(@RequestParam Integer course) {
         var result = subjectService.getSubjectsByCourse(course);
         return result.stream()
