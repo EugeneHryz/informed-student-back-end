@@ -1,4 +1,4 @@
-package edu.example.config;
+package edu.example.web.config;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;

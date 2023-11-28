@@ -1,4 +1,4 @@
-package edu.example.controller;
+package edu.example.web.controller;
 
 import edu.example.dto.PageResponse;
 import edu.example.dto.post.CreatePostRequestDto;
@@ -6,11 +6,13 @@ import edu.example.dto.post.PostResponseDto;
 import edu.example.mapper.PostMapper;
 import edu.example.model.Post;
 import edu.example.service.PostService;
+import edu.example.web.security.UserInfoDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,13 +31,15 @@ public class PostController {
     @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
     @Operation(description = "Create post")
     public PostResponseDto create(@RequestPart("post") @Valid CreatePostRequestDto createPostRequestDto,
-                                  @RequestPart(value = "files", required = false) List<MultipartFile> files
-    ) {
+                                  @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                                  @AuthenticationPrincipal UserInfoDetails userDetails) {
+
         Post post = postService.createPostWithFiles(
                 createPostRequestDto.getFolderId(),
+                userDetails.getUser(),
                 createPostRequestDto.getText(),
-                files
-        );
+                files);
+
         return postMapper.toPostResponseDto(post);
     }
 

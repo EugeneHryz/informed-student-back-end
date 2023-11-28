@@ -1,9 +1,8 @@
 package edu.example.repository;
 
-import edu.example.config.MinioTestConfig;
-import edu.example.config.PostgresTestConfig;
 import edu.example.model.*;
-import edu.example.model.FolderType;
+import edu.example.web.config.MinioTestConfig;
+import edu.example.web.config.PostgresTestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +27,8 @@ public class CommentRepositoryTest {
     FolderRepository folderRepository;
     @Autowired
     SubjectRepository subjectRepository;
+    @Autowired
+    UserRepository userRepository;
 
     @BeforeEach
     @AfterEach
@@ -43,12 +44,13 @@ public class CommentRepositoryTest {
         // given
         var subject = subjectRepository.save(new Subject(0L, "physics", 3));
         var folder = folderRepository.save(new Folder(0L, subject, FolderType.TEST));
+        var user = userRepository.save(new User(0L, "1234", "someone", "3534534", Role.USER));
         var post = postRepository.save(new Post(0L, folder,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post text", null, null));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post text", user, null, null));
 
         // when
         var newComment = commentRepository.save(new Comment(0L, post,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Comment text"));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Comment text", user));
 
         // then
         assertEquals(post.getId(), newComment.getPost().getId());
@@ -61,18 +63,19 @@ public class CommentRepositoryTest {
         // given
         var subject = subjectRepository.save(new Subject(0L, "physics", 3));
         var folder = folderRepository.save(new Folder(0L, subject, FolderType.TEST));
+        var user = userRepository.save(new User(0L, "1234", "someone", "3534534", Role.USER));
 
         var post1 = postRepository.save(new Post(0L, folder,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post1 text", null, null));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post1 text", user, null, null));
         var comment1Post1 = commentRepository.save(new Comment(0L, post1,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Comment1 text"));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Comment1 text", user));
         var comment2Post1 = commentRepository.save(new Comment(0L, post1,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Comment2 text"));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Comment2 text", user));
 
         var post2 = postRepository.save(new Post(0L, folder,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post2 text", null, null));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post2 text", user, null, null));
         var comment1Post2 = commentRepository.save(new Comment(0L, post2,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Comment3 text"));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Comment3 text", user));
 
         // when
         var result = commentRepository.findCommentsByPostOrderByCreatedAt(post1);

@@ -1,17 +1,18 @@
-package edu.example.controller;
+package edu.example.web.controller;
 
+import edu.example.dto.PageResponse;
 import edu.example.dto.comment.CommentResponseDto;
 import edu.example.dto.comment.CreateCommentRequestDto;
 import edu.example.mapper.CommentMapper;
 import edu.example.model.Comment;
 import edu.example.service.CommentService;
+import edu.example.web.security.UserInfoDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @RestController
@@ -25,11 +26,13 @@ public class CommentController {
 
     @PostMapping
     @Operation(description = "Create comment")
-    public CommentResponseDto create(@RequestBody @Valid CreateCommentRequestDto createCommentRequestDto) {
+    public CommentResponseDto create(@RequestBody @Valid CreateCommentRequestDto createCommentRequestDto,
+                                     @AuthenticationPrincipal UserInfoDetails userDetails) {
         Comment comment = commentService.createComment(
                 createCommentRequestDto.getPostId(),
-                createCommentRequestDto.getText()
-        );
+                userDetails.getUser(),
+                createCommentRequestDto.getText());
+
         return commentMapper.toCommentResponseDto(comment);
     }
 
@@ -47,8 +50,18 @@ public class CommentController {
 
     @GetMapping("/filterByPost")
     @Operation(description = "Receive comments by post")
-    public List<CommentResponseDto> findCommentsByPost(@RequestParam Long postId) {
-        var result = commentService.getCommentsByPost(postId);
-        return result.stream().map(commentMapper::toCommentResponseDto).toList();
+    public PageResponse<CommentResponseDto> findCommentsByPost(@RequestParam Long postId,
+                                                               @RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "5") int size) {
+        var result = commentService.getCommentsByPost(page, size, postId);
+
+        var response = new PageResponse<CommentResponseDto>();
+        response.setPageSize(result.getSize());
+        response.setPageNumber(result.getNumber());
+        response.setTotalPages(result.getTotalPages());
+        response.setTotalSize(result.getTotalElements());
+        response.setContent(result.getContent().stream().map(commentMapper::toCommentResponseDto).toList());
+
+        return response;
     }
 }

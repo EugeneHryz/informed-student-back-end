@@ -1,9 +1,8 @@
 package edu.example.repository;
 
-import edu.example.config.MinioTestConfig;
-import edu.example.config.PostgresTestConfig;
 import edu.example.model.*;
-import edu.example.model.FolderType;
+import edu.example.web.config.MinioTestConfig;
+import edu.example.web.config.PostgresTestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +25,8 @@ public class PostRepositoryTest {
     FolderRepository folderRepository;
     @Autowired
     SubjectRepository subjectRepository;
+    @Autowired
+    UserRepository userRepository;
 
     @BeforeEach
     @AfterEach
@@ -40,10 +41,11 @@ public class PostRepositoryTest {
         // given
         var subject = subjectRepository.save(new Subject(0L, "physics", 3));
         var folder = folderRepository.save(new Folder(0L, subject, FolderType.TEST));
+        var user = userRepository.save(new User(0L, "1234", "someone", "3534534", Role.USER));
 
         // when
         var newPost = postRepository.save(new Post(0L, folder,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post text", null, null));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post text", user, null, null));
 
         // then
         assertEquals(folder.getId(), newPost.getFolder().getId());
@@ -55,16 +57,17 @@ public class PostRepositoryTest {
     public void getPostByFolder() {
         // given
         var subject = subjectRepository.save(new Subject(0L, "physics", 3));
+        var user = userRepository.save(new User(0L, "1234", "someone", "3534534", Role.USER));
 
         var folderTest = folderRepository.save(new Folder(0L, subject, FolderType.TEST));
         var postTest1 = postRepository.save(new Post(0L, folderTest,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post1 text", null, null));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post1 text", user, null, null));
         var postTest2 = postRepository.save(new Post(0L, folderTest,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post2 text", null, null));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post2 text", user, null, null));
 
         var folderNotes = folderRepository.save(new Folder(0L, subject, FolderType.NOTES));
         var postNotes3 = postRepository.save(new Post(0L, folderNotes,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post3 text", null, null));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post3 text", user, null, null));
 
         // when
         var result = postRepository.getPostsByFolderOrderByCreatedAt(folderTest);
