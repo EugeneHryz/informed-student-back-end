@@ -30,4 +30,8 @@ public class Comment {
 
     @Column
     private String text;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

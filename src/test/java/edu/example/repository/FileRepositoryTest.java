@@ -27,6 +27,8 @@ public class FileRepositoryTest {
     FolderRepository folderRepository;
     @Autowired
     SubjectRepository subjectRepository;
+    @Autowired
+    UserRepository userRepository;
 
     @BeforeEach
     @AfterEach
@@ -42,8 +44,9 @@ public class FileRepositoryTest {
         // given
         var subject = subjectRepository.save(new Subject(0L, "physics", 3));
         var folder = folderRepository.save(new Folder(0L, subject, FolderType.TEST));
+        var user = userRepository.save(new User(0L, "1234", "someone", "3534534", Role.USER));
         var post = postRepository.save(new Post(0L, folder,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post text", null, null));
+                Timestamp.valueOf("1970-01-01 00:00:00"), "Post text", user, null, null));
 
         // when
         var newFile = fileRepository.save(new FileModel(0L, post, "original", "savedBy"));

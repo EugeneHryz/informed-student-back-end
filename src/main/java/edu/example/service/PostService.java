@@ -3,6 +3,7 @@ package edu.example.service;
 import edu.example.exception.EntityNotFoundException;
 import edu.example.model.FileModel;
 import edu.example.model.Post;
+import edu.example.model.User;
 import edu.example.repository.PostRepository;
 import edu.example.repository.exception.FileWriteException;
 import edu.example.util.AllowedFileExtension;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,10 +39,11 @@ public class PostService {
         return postRepository.findByFolderId(folderId, pageable);
     }
 
-    public Post createPostWithFiles(Long folderId, String text, List<MultipartFile> files) {
+    public Post createPostWithFiles(Long folderId, User user, String text, List<MultipartFile> files) {
         var post = new Post();
         post.setFolder(folderService.getFolder(folderId));
         post.setText(text);
+        post.setUser(user);
         List<FileModel> fileModels = new ArrayList<>();
         if (nonNull(files) && !files.isEmpty()) {
             for (var file : files) {
