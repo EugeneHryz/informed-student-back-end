@@ -2,6 +2,7 @@ package edu.example.web.controller;
 
 import edu.example.dto.auth.AuthUserDto;
 import edu.example.dto.auth.LoginRequestDto;
+import edu.example.dto.auth.PasswordRequestDto;
 import edu.example.dto.auth.RegisterRequestDto;
 import edu.example.exception.UnprocessableEntityException;
 import edu.example.service.AuthService;
@@ -44,4 +45,14 @@ public class AuthController {
     public ResponseEntity<AuthUserDto> login(@RequestBody LoginRequestDto requestDto) {
         return ResponseEntity.ok(authService.login(requestDto));
     }
+
+    @PostMapping("/validate")
+    @Operation(summary = "Check if password's complexity meets the requirements")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password is valid"),
+            @ApiResponse(responseCode = "400", description = "Password is invalid / parsing error")
+    })
+    public void validate(@RequestBody @Valid PasswordRequestDto requestDto) {
+    }
+
 }
