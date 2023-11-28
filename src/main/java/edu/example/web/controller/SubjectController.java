@@ -2,7 +2,6 @@ package edu.example.web.controller;
 
 import edu.example.dto.subject.CreateSubjectRequestDto;
 import edu.example.dto.subject.SubjectResponseDto;
-import edu.example.exception.UnprocessableEntityException;
 import edu.example.mapper.SubjectMapper;
 import edu.example.model.Subject;
 import edu.example.service.SubjectService;
