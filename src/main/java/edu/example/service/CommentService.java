@@ -2,6 +2,7 @@ package edu.example.service;
 
 import edu.example.exception.EntityNotFoundException;
 import edu.example.model.Comment;
+import edu.example.model.User;
 import edu.example.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,16 +23,17 @@ public class CommentService {
                 Sort.Order.desc("createdAt")
         ));
 
-        return commentRepository.findByPostIdOrderByCreatedAt(postId, pageable);
+        return commentRepository.findByPostId(postId, pageable);
     }
 
     public Comment getComment(Long id) {
         return commentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Comment not found"));
     }
 
-    public Comment createComment(Long postId, String text) {
+    public Comment createComment(Long postId, User user, String text) {
         var comment = new Comment();
         comment.setPost(postService.getPost(postId));
+        comment.setUser(user);
         comment.setText(text);
         return commentRepository.save(comment);
     }

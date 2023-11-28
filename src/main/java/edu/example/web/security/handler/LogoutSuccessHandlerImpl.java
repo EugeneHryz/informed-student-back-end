@@ -3,6 +3,7 @@ package edu.example.web.security.handler;
 import edu.example.model.Token;
 import edu.example.service.TokenService;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -11,11 +12,11 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
-import static edu.example.web.security.SecurityConstants.AUTH_HEADER;
-import static edu.example.web.security.SecurityConstants.TOKEN_PREFIX;
+import static edu.example.web.security.SecurityConstants.JWT_COOKIE_NAME;
 
 @RequiredArgsConstructor
 @Component
@@ -25,10 +26,17 @@ public class LogoutSuccessHandlerImpl implements LogoutSuccessHandler {
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        String authHeaderValue = request.getHeader(AUTH_HEADER);
-        if (Objects.nonNull(authHeaderValue) && authHeaderValue.startsWith(TOKEN_PREFIX)) {
+        Cookie[] cookies = request.getCookies();
+        Optional<Cookie> tokenCookieOpt = Optional.empty();
+        if (Objects.nonNull(cookies)) {
+            tokenCookieOpt = Arrays.stream(cookies)
+                    .filter(c -> JWT_COOKIE_NAME.equals(c.getName()))
+                    .findFirst();
+        }
 
-            String tokenValue = authHeaderValue.substring(TOKEN_PREFIX.length());
+        if (tokenCookieOpt.isPresent()) {
+
+            String tokenValue = tokenCookieOpt.get().getValue();
             Optional<Token> tokenOptional = tokenService.findByTokenValue(tokenValue);
             tokenOptional.ifPresent(tokenService::makeInactive);
 

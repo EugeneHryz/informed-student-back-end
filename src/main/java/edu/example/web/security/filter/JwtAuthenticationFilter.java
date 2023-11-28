@@ -3,6 +3,7 @@ package edu.example.web.security.filter;
 import edu.example.web.security.jwt.JwtAuthentication;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -13,21 +14,19 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
-import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
-import static edu.example.web.security.SecurityConstants.AUTH_HEADER;
-import static edu.example.web.security.SecurityConstants.TOKEN_PREFIX;
+import static edu.example.web.security.SecurityConstants.JWT_COOKIE_NAME;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
-    private SecurityContextRepository securityContextRepository = new RequestAttributeSecurityContextRepository();
 
     private final AuthenticationManager authenticationManager;
 
@@ -36,11 +35,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NotNull HttpServletResponse response,
                                     @NotNull FilterChain filterChain) throws ServletException, IOException {
 
-        String authHeaderValue = request.getHeader(AUTH_HEADER);
-        if (Objects.nonNull(authHeaderValue) && authHeaderValue.startsWith(TOKEN_PREFIX)) {
+        Cookie[] cookies = request.getCookies();
+        Optional<Cookie> tokenCookieOpt = Optional.empty();
+        if (Objects.nonNull(cookies)) {
+            tokenCookieOpt = Arrays.stream(cookies)
+                    .filter(c -> JWT_COOKIE_NAME.equals(c.getName()))
+                    .findFirst();
+        }
 
-            String tokenValue = authHeaderValue.substring(TOKEN_PREFIX.length());
+        if (tokenCookieOpt.isPresent()) {
 
+            String tokenValue = tokenCookieOpt.get().getValue();
             try {
                 Authentication authResult = authenticationManager.authenticate(new JwtAuthentication(tokenValue));
 
