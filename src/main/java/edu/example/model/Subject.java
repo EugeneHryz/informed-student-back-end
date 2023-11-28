@@ -17,7 +17,7 @@ public class Subject {
     @SequenceGenerator(name = "subject_seq", sequenceName = "subject_seq", allocationSize = 1)
     private Long id;
 
-    @Column
+    @Column(unique = true)
     private String name;
 
     @Column

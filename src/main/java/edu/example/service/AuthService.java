@@ -1,5 +1,6 @@
 package edu.example.service;
 
+import edu.example.dto.auth.AuthUserDto;
 import edu.example.dto.auth.LoginRequestDto;
 import edu.example.dto.auth.RegisterRequestDto;
 import edu.example.exception.UnprocessableEntityException;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -29,7 +32,7 @@ public class AuthService {
     private final TokenService tokenService;
 
     @Transactional
-    public String register(RegisterRequestDto registerRequest) throws UnprocessableEntityException {
+    public AuthUserDto register(RegisterRequestDto registerRequest) throws UnprocessableEntityException {
         Optional<User> existingUser = userRepository.findByUsername(registerRequest.getUsername());
         if (existingUser.isPresent()) {
             throw new UnprocessableEntityException("User with that username already exists");
@@ -43,21 +46,23 @@ public class AuthService {
 
         String generatedToken = jwtService.generateFromUser(user);
         tokenService.saveNewToken(generatedToken, user);
-        return generatedToken;
+        return new AuthUserDto(generatedToken, user.getUsername(), user.getRole().getRoles()
+                .stream().map(Enum::name)
+                .collect(Collectors.toSet()));
     }
 
     @Transactional
-    public String login(LoginRequestDto loginRequest) {
+    public AuthUserDto login(LoginRequestDto loginRequest) {
         authManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
                 loginRequest.getPassword()));
         User user = userRepository.findByUsername(loginRequest.getUsername())
                 .orElseThrow(() -> new IllegalStateException("Authenticated user cannot be null"));
 
-        SecurityContext context = SecurityContextHolder.getContextHolderStrategy().getContext();
-
         tokenService.deactivateUserTokens(user.getId());
         String generatedToken = jwtService.generateFromUser(user);
         tokenService.saveNewToken(generatedToken, user);
-        return generatedToken;
+        return new AuthUserDto(generatedToken, user.getUsername(), user.getRole().getRoles()
+                .stream().map(Enum::name)
+                .collect(Collectors.toSet()));
     }
 }
