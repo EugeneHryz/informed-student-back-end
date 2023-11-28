@@ -1,6 +1,7 @@
 package edu.example.web.security;
 
 import edu.example.model.User;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Set;
 
+@Getter
 @RequiredArgsConstructor
 public class UserInfoDetails implements UserDetails {
 

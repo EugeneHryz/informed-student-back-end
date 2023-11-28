@@ -6,10 +6,12 @@ import edu.example.dto.comment.CreateCommentRequestDto;
 import edu.example.mapper.CommentMapper;
 import edu.example.model.Comment;
 import edu.example.service.CommentService;
+import edu.example.web.security.UserInfoDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -24,11 +26,13 @@ public class CommentController {
 
     @PostMapping
     @Operation(description = "Create comment")
-    public CommentResponseDto create(@RequestBody @Valid CreateCommentRequestDto createCommentRequestDto) {
+    public CommentResponseDto create(@RequestBody @Valid CreateCommentRequestDto createCommentRequestDto,
+                                     @AuthenticationPrincipal UserInfoDetails userDetails) {
         Comment comment = commentService.createComment(
                 createCommentRequestDto.getPostId(),
-                createCommentRequestDto.getText()
-        );
+                userDetails.getUser(),
+                createCommentRequestDto.getText());
+
         return commentMapper.toCommentResponseDto(comment);
     }
 

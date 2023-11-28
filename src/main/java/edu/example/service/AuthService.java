@@ -1,6 +1,5 @@
 package edu.example.service;
 
-import edu.example.dto.auth.AuthUserDto;
 import edu.example.dto.auth.LoginRequestDto;
 import edu.example.dto.auth.RegisterRequestDto;
 import edu.example.exception.UnprocessableEntityException;
@@ -30,7 +29,7 @@ public class AuthService {
     private final TokenService tokenService;
 
     @Transactional
-    public AuthUserDto register(RegisterRequestDto registerRequest) throws UnprocessableEntityException {
+    public String register(RegisterRequestDto registerRequest) throws UnprocessableEntityException {
         Optional<User> existingUser = userRepository.findByUsername(registerRequest.getUsername());
         if (existingUser.isPresent()) {
             throw new UnprocessableEntityException("User with that username already exists");
@@ -44,11 +43,11 @@ public class AuthService {
 
         String generatedToken = jwtService.generateFromUser(user);
         tokenService.saveNewToken(generatedToken, user);
-        return new AuthUserDto(generatedToken);
+        return generatedToken;
     }
 
     @Transactional
-    public AuthUserDto login(LoginRequestDto loginRequest) {
+    public String login(LoginRequestDto loginRequest) {
         authManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
                 loginRequest.getPassword()));
         User user = userRepository.findByUsername(loginRequest.getUsername())
@@ -59,6 +58,6 @@ public class AuthService {
         tokenService.deactivateUserTokens(user.getId());
         String generatedToken = jwtService.generateFromUser(user);
         tokenService.saveNewToken(generatedToken, user);
-        return new AuthUserDto(generatedToken);
+        return generatedToken;
     }
 }

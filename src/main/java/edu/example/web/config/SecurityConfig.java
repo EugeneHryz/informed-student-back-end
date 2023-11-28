@@ -47,7 +47,8 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthenticationFilter(authManager), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(ALLOWED_URL_PATTERNS).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/folder/**", "/subject/**").hasAuthority(Role.MODERATOR.name())
+                        .requestMatchers(HttpMethod.POST, "/folder/**", "/subject/**")
+                        .hasAuthority(Role.MODERATOR.name())
                         .anyRequest().authenticated()
                 )
                 .authenticationManager(authManager)
@@ -99,7 +100,7 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
         config.setAllowedMethods(List.of("*"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowedOrigins(List.of("*"));
+        config.setAllowedOriginPatterns(List.of("*"));
         source.registerCorsConfiguration("/**", config);
 
         return source;
