@@ -1,5 +1,6 @@
 package edu.example.web.controller;
 
+import edu.example.dto.auth.AuthUserDto;
 import edu.example.dto.auth.LoginRequestDto;
 import edu.example.dto.auth.PasswordRequestDto;
 import edu.example.dto.auth.RegisterRequestDto;
@@ -10,15 +11,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import edu.example.web.security.SecurityConstants;
+import edu.example.web.security.UserInfoDetails;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -28,6 +31,16 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @RequestMapping("/user")
+    public ResponseEntity<AuthUserDto> user(@AuthenticationPrincipal UserInfoDetails userDetails) {
+        AuthUserDto user = new AuthUserDto();
+        user.setUsername(userDetails.getUsername());
+        user.setRoles(userDetails.getRoles().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet()));
+        return ResponseEntity.ok(user);
+    }
+
     @PostMapping("/register")
     @Operation(summary = "Registering new user")
     @ApiResponses(value = {
@@ -36,9 +49,9 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody @Valid RegisterRequestDto requestDto,
                                       HttpServletResponse response)
             throws UnprocessableEntityException {
-        String token = authService.register(requestDto);
-        addTokenCookieToResponse(response, token);
-        return ResponseEntity.ok().build();
+        AuthUserDto authUser = authService.register(requestDto);
+        addTokenCookieToResponse(response, authUser.getToken());
+        return ResponseEntity.ok(authUser);
     }
 
     @PostMapping("/login")
@@ -49,9 +62,9 @@ public class AuthController {
     })
     public ResponseEntity<?> login(@RequestBody LoginRequestDto requestDto,
                                    HttpServletResponse response) {
-        String token = authService.login(requestDto);
-        addTokenCookieToResponse(response, token);
-        return ResponseEntity.ok().build();
+        AuthUserDto authUser = authService.login(requestDto);
+        addTokenCookieToResponse(response, authUser.getToken());
+        return ResponseEntity.ok(authUser);
     }
 
     private void addTokenCookieToResponse(HttpServletResponse response, String token) {

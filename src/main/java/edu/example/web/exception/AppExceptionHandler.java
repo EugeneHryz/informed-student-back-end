@@ -45,15 +45,8 @@ public class AppExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(UnprocessableEntityException.class)
-    public ResponseEntity<Object> handleUnprocessableEntityException(UnprocessableEntityException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("error", ex.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler(DuplicateEntityException.class)
-    public ResponseEntity<Object> handleDuplicateEntityException(DuplicateEntityException ex) {
+    @ExceptionHandler({DuplicateEntityException.class, UnprocessableEntityException.class})
+    public ResponseEntity<Object> handleUnprocessableEntityException(Exception ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("error", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
