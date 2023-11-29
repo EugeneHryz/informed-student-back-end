@@ -1,6 +1,5 @@
 package edu.example.web.config;
 
-import edu.example.model.Role;
 import edu.example.repository.UserRepository;
 import edu.example.service.TokenService;
 import edu.example.web.security.UserDetailsServiceImpl;
@@ -10,11 +9,11 @@ import edu.example.web.security.provider.DbAuthenticationProvider;
 import edu.example.web.security.provider.JwtAuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -28,18 +27,19 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import java.util.List;
+
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private static final String[] ALLOWED_URL_PATTERNS = { "/auth/**", "/swagger-ui/**", "/v3/api-docs/**" };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, LogoutSuccessHandler logoutHandler,
-                                           AuthenticationManager authManager) throws Exception {
+                                           JwtAuthenticationProvider authManager) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -47,8 +47,6 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthenticationFilter(authManager), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(ALLOWED_URL_PATTERNS).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/folder/**", "/subject/**")
-                        .hasAuthority(Role.MODERATOR.name())
                         .anyRequest().authenticated()
                 )
                 .authenticationManager(authManager)

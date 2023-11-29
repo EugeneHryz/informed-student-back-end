@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class FolderController {
     private final FolderMapper folderMapper;
 
     @PostMapping
+    @PreAuthorize("hasAuthority('MODERATOR')")
     @Operation(description = "Create folder")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created successfully"),
@@ -44,6 +46,7 @@ public class FolderController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('MODERATOR')")
     @Operation(description = "Delete folder by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Deleted successfully"),

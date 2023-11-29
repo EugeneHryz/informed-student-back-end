@@ -5,6 +5,7 @@ import edu.example.dto.post.CreatePostRequestDto;
 import edu.example.dto.post.PostResponseDto;
 import edu.example.mapper.PostMapper;
 import edu.example.model.Post;
+import edu.example.model.Role;
 import edu.example.service.PostService;
 import edu.example.web.security.UserInfoDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,10 +15,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 
 
@@ -57,7 +58,13 @@ public class PostController {
             @ApiResponse(responseCode = "404", description = "Post not found"),
             @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised")
     })
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable Long id, @AuthenticationPrincipal UserInfoDetails userDetails) {
+        if (!(
+                userDetails.getRoles().stream().anyMatch(it -> it.getAuthority().equals(Role.MODERATOR.name())) ||
+                postService.getPost(id).getUser().getId().equals(userDetails.getUser().getId())
+        )) {
+            throw new AccessDeniedException("");
+        }
         postService.deletePost(id);
     }
 

@@ -1,6 +1,7 @@
 package edu.example.web.security.filter;
 
 import edu.example.web.security.jwt.JwtAuthentication;
+import edu.example.web.security.provider.JwtAuthenticationProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -8,27 +9,25 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
-
 import static edu.example.web.security.SecurityConstants.JWT_COOKIE_NAME;
+
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
-    private final AuthenticationManager authenticationManager;
+    private final JwtAuthenticationProvider jwtAuthenticationProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -47,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String tokenValue = tokenCookieOpt.get().getValue();
             try {
-                Authentication authResult = authenticationManager.authenticate(new JwtAuthentication(tokenValue));
+                Authentication authResult = jwtAuthenticationProvider.authenticate(new JwtAuthentication(tokenValue));
 
                 SecurityContext context = this.securityContextHolderStrategy.createEmptyContext();
                 context.setAuthentication(authResult);

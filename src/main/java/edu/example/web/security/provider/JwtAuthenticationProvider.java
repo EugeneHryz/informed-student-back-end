@@ -6,6 +6,7 @@ import edu.example.web.security.exception.InvalidTokenException;
 import edu.example.web.security.jwt.JwtAuthentication;
 import edu.example.web.security.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -15,7 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class JwtAuthenticationProvider implements AuthenticationProvider {
+public class JwtAuthenticationProvider implements AuthenticationProvider, AuthenticationManager {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;

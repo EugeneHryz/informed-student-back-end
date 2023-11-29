@@ -11,8 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 
@@ -26,6 +26,7 @@ public class SubjectController {
     private final SubjectMapper subjectMapper;
 
     @PostMapping
+    @PreAuthorize("hasAuthority('MODERATOR')")
     @Operation(description = "Create subject")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created successfully"),
@@ -42,6 +43,7 @@ public class SubjectController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('MODERATOR')")
     @Operation(description = "Delete subject by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Deleted successfully"),
