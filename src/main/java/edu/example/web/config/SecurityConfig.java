@@ -39,7 +39,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, LogoutSuccessHandler logoutHandler,
-                                           JwtAuthenticationProvider authManager) throws Exception {
+                                           AuthenticationManager authManager) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)

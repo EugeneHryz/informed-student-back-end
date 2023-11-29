@@ -1,7 +1,6 @@
 package edu.example.web.security.filter;
 
 import edu.example.web.security.jwt.JwtAuthentication;
-import edu.example.web.security.provider.JwtAuthenticationProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -9,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
@@ -27,7 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
-    private final JwtAuthenticationProvider jwtAuthenticationProvider;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String tokenValue = tokenCookieOpt.get().getValue();
             try {
-                Authentication authResult = jwtAuthenticationProvider.authenticate(new JwtAuthentication(tokenValue));
+                Authentication authResult = authenticationManager.authenticate(new JwtAuthentication(tokenValue));
 
                 SecurityContext context = this.securityContextHolderStrategy.createEmptyContext();
                 context.setAuthentication(authResult);
