@@ -2,6 +2,7 @@ package edu.example.scheduling;
 
 import edu.example.Application;
 import edu.example.service.CommentService;
+import org.jetbrains.annotations.NotNull;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -25,7 +26,7 @@ public class DeleteOldCommentsJob extends QuartzJobBean {
     }
 
     @Override
-    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+    protected void executeInternal(@NotNull JobExecutionContext context) throws JobExecutionException {
         commentService.deleteCommentsOlderThen(2, 0, 0);
         logger.info("Deleted old comments");
     }
