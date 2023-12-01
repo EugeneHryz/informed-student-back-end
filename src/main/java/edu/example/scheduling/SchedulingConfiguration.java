@@ -22,7 +22,7 @@ public class SchedulingConfiguration {
     public Trigger trigger() {
         return TriggerBuilder.newTrigger()
                 .forJob(jobDetail())
-                .withIdentity("JobTrigger")
+                .withIdentity("OldCommentsDeletionTrigger")
                 .withSchedule(SimpleScheduleBuilder.repeatMinutelyForever(15))
                 .build();
     }
@@ -31,8 +31,8 @@ public class SchedulingConfiguration {
     public Scheduler scheduler(SchedulerFactoryBean factory, Trigger trigger) throws SchedulerException {
         factory.setWaitForJobsToCompleteOnShutdown(true);
         var scheduler = factory.getScheduler();
-        scheduler.unscheduleJob(trigger.getKey());
-        scheduler.scheduleJob(trigger);
+        if (!scheduler.checkExists(trigger.getKey()))
+            scheduler.scheduleJob(trigger);
         scheduler.start();
         return scheduler;
     }

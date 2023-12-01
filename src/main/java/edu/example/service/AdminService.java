@@ -28,19 +28,15 @@ public class AdminService {
      */
     public synchronized void changeOldCommentsDeletionTime(int hours, int minutes, int seconds) throws SchedulerException {
         Trigger newTrigger = TriggerBuilder.newTrigger().forJob(jobDetail)
-                .withIdentity("SomeJobTrigger")
+                .withIdentity(trigger.getKey().getName())
                 .withSchedule(SimpleScheduleBuilder.repeatSecondlyForever(
                         (int) (TimeUnit.HOURS.toSeconds(hours)
                                 + TimeUnit.MINUTES.toSeconds(minutes)
                                 + TimeUnit.SECONDS.toSeconds(seconds))
                 )).build();
 
-        scheduler.unscheduleJob(trigger.getKey());
-        scheduler.deleteJob(jobDetail.getKey());
-        scheduler.scheduleJob(jobDetail, newTrigger);
-        trigger = newTrigger;
+        scheduler.rescheduleJob(trigger.getKey(), newTrigger);
 
-        scheduler.start();
         logger.info(String.format("Old comments deletion time changed to: %dh %dm %ds",
                 hours, minutes, seconds));
     }
