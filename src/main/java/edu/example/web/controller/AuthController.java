@@ -31,7 +31,7 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @RequestMapping("/user")
+    @GetMapping("/user")
     public ResponseEntity<AuthUserDto> user(@AuthenticationPrincipal UserInfoDetails userDetails) {
         AuthUserDto user = new AuthUserDto();
         user.setUsername(userDetails.getUsername());
