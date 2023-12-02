@@ -38,10 +38,8 @@ public class CommentController {
     })
     public CommentResponseDto create(@RequestBody @Valid CreateCommentRequestDto createCommentRequestDto,
                                      @AuthenticationPrincipal UserInfoDetails userDetails) {
-        Comment comment = commentService.createComment(
-                createCommentRequestDto.getPostId(),
-                userDetails.getUser(),
-                createCommentRequestDto.getText());
+        Comment comment = commentService.createComment(createCommentRequestDto,
+                userDetails.getUser());
 
         return commentMapper.toCommentResponseDto(comment);
     }

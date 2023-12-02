@@ -34,4 +34,7 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Column(name = "anonymous", updatable = false)
+    private boolean isAnonymous;
 }
