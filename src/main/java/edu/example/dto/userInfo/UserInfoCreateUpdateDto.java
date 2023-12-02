@@ -27,4 +27,7 @@ public class UserInfoCreateUpdateDto {
     @Size(max = 100)
     private String specialty;
 
+    @Schema(description = "Name, user's image is saved by in storage")
+    private String userImageFileName;
+
 }

@@ -18,4 +18,6 @@ public class UserInfoResponseDto {
 
     private String specialty;
 
+    private String userImageFileName;
+
 }

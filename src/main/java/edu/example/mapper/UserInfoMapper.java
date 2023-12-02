@@ -13,8 +13,10 @@ import java.sql.Date;
 public interface UserInfoMapper {
 
     @Mapping(target = "dateOfBirth", qualifiedByName = "mapStringToDate")
+    @Mapping(target = "userImage", source = "userImageFileName")
     UserInfo toUserInfo(UserInfoCreateUpdateDto dto);
 
+    @Mapping(target = "userImageFileName", source = "userImage")
     UserInfoResponseDto toUserInfoResponseDto(UserInfo userInfo);
 
     @Named("mapStringToDate")

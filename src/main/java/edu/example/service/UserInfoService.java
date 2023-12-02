@@ -26,7 +26,7 @@ public class UserInfoService {
         this.fileStorageService = fileStorageService;
     }
 
-    public UserInfo createUserInfo(UserInfo userInfo) {
+    public UserInfo createOrUpdateUserInfo(UserInfo userInfo) {
         if (!userRepository.existsByUsername(userInfo.getUsername()))
             throw new EntityNotFoundException("User not found");
 
@@ -39,13 +39,6 @@ public class UserInfoService {
             throw new EntityNotFoundException("User not found");
 
         return optional.get();
-    }
-
-    public UserInfo updateUserInfo(UserInfo userInfo) {
-        if (!userInfoRepository.existsById(userInfo.getUsername()))
-            throw new EntityNotFoundException("User info not found");
-
-        return userInfoRepository.save(userInfo);
     }
 
     public String getUserImageName(String username) {

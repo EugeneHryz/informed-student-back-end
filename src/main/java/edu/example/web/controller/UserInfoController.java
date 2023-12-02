@@ -28,16 +28,16 @@ public class UserInfoController {
     }
 
     @PostMapping
-    @Operation(summary = "Save user's info")
+    @Operation(summary = "Saves or updates user's info")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Saved successfully"),
+            @ApiResponse(responseCode = "200", description = "Saved/updated successfully"),
             @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "400", description = "Parsing / validation error")
     })
-    public UserInfoResponseDto addUserInfo(@RequestBody @Valid UserInfoCreateUpdateDto userInfo) {
+    public UserInfoResponseDto createOrUpdateUserInfo(@RequestBody @Valid UserInfoCreateUpdateDto userInfo) {
         return userInfoMapper.toUserInfoResponseDto(
-                userInfoService.createUserInfo(
+                userInfoService.createOrUpdateUserInfo(
                         userInfoMapper.toUserInfo(userInfo)));
     }
 
@@ -52,20 +52,6 @@ public class UserInfoController {
     public UserInfoResponseDto getUserInfo(String username) {
         return userInfoMapper.toUserInfoResponseDto(
                 userInfoService.getUserInfo(username));
-    }
-
-    @PutMapping
-    @Operation(summary = "Update user's info")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Updated successfully"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
-            @ApiResponse(responseCode = "404", description = "User not found"),
-            @ApiResponse(responseCode = "400", description = "Parsing / validation error")
-    })
-    public UserInfoResponseDto updateUserInfo(@RequestBody @Valid UserInfoCreateUpdateDto userInfo) {
-        return userInfoMapper.toUserInfoResponseDto(
-                userInfoService.updateUserInfo(
-                        userInfoMapper.toUserInfo(userInfo)));
     }
 
     @PostMapping(path = "/setImage", consumes = {MediaType.IMAGE_JPEG_VALUE})
