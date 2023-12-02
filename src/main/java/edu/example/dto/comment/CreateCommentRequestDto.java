@@ -14,4 +14,6 @@ public class CreateCommentRequestDto {
 
     @NotNull
     private String text;
+
+    private boolean isAnonymous;
 }

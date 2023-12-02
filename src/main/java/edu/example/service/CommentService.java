@@ -1,9 +1,11 @@
 package edu.example.service;
 
+import edu.example.dto.comment.CreateCommentRequestDto;
 import edu.example.exception.EntityNotFoundException;
 import edu.example.model.Comment;
 import edu.example.model.User;
 import edu.example.repository.CommentRepository;
+import edu.example.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +21,7 @@ import java.util.Calendar;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final PostService postService;
+    private final PostRepository postRepository;
 
     public Page<Comment> getCommentsByPost(int pageNumber, int pageSize, long postId) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(
@@ -33,18 +35,19 @@ public class CommentService {
         return commentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Comment not found"));
     }
 
-    public Comment createComment(Long postId, User user, String text) {
+    public Comment createComment(CreateCommentRequestDto createRequestDto, User user) {
         var comment = new Comment();
-        comment.setPost(postService.getPost(postId));
+        comment.setPost(postRepository.getReferenceById(createRequestDto.getPostId()));
         comment.setUser(user);
-        comment.setText(text);
+        comment.setText(createRequestDto.getText());
+        comment.setAnonymous(createRequestDto.isAnonymous());
         return commentRepository.save(comment);
     }
 
     public Comment updateComment(Long id, Long postId, String text) {
         var comment = new Comment();
         comment.setId(id);
-        comment.setPost(postService.getPost(postId));
+        comment.setPost(postRepository.getReferenceById(postId));
         comment.setText(text);
         return commentRepository.save(comment);
     }
