@@ -34,7 +34,7 @@ public class MinioFileStorageService implements FileStorageService {
      * @return generated file name
      * @throws IOException
      */
-    private String saveFile(MultipartFile file) throws FileWriteException {
+    public String saveFile(MultipartFile file) throws FileWriteException {
 
         String fileExt = FilenameUtils.getExtension(file.getOriginalFilename());
         String generatedFileName = String.format("%s/%s", fileExt, UUID.randomUUID());

@@ -15,6 +15,9 @@ public class UserInfo {
     @Id
     private String username;
 
+    @Column(name = "user_image_name")
+    private String userImage;
+
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
 

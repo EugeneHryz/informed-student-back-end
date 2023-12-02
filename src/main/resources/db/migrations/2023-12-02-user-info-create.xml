@@ -15,11 +15,12 @@
             <column name="gender" type="VARCHAR"/>
             <column name="course" type="INTEGER"/>
             <column name="specialty" type="VARCHAR"/>
+            <column name="user_image_name" type="VARCHAR"/>
         </createTable>
 
         <addForeignKeyConstraint baseTableName="user_info"
                                  baseColumnNames="username"
-                                 constraintName="fk_user_info_id"
+                                 constraintName="fk_user_info_username"
                                  referencedTableName="users"
                                  referencedColumnNames="username" />
 

@@ -9,7 +9,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/userInfo")
@@ -26,7 +28,7 @@ public class UserInfoController {
     }
 
     @PostMapping
-    @Operation(description = "Save user's info")
+    @Operation(summary = "Save user's info")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Saved successfully"),
             @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
@@ -40,7 +42,7 @@ public class UserInfoController {
     }
 
     @GetMapping
-    @Operation(description = "Retrieve user's info")
+    @Operation(summary = "Retrieve user's info")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
             @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
@@ -53,7 +55,7 @@ public class UserInfoController {
     }
 
     @PutMapping
-    @Operation(description = "Update user's info")
+    @Operation(summary = "Update user's info")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Updated successfully"),
             @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
@@ -64,6 +66,30 @@ public class UserInfoController {
         return userInfoMapper.toUserInfoResponseDto(
                 userInfoService.updateUserInfo(
                         userInfoMapper.toUserInfo(userInfo)));
+    }
+
+    @PostMapping(path = "/setImage", consumes = {MediaType.IMAGE_JPEG_VALUE})
+    @Operation(summary = "Set user's image")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Uploaded successfully"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "415", description = "File type not supported")
+    })
+    public void setUserImage(@RequestParam String username,
+                             @RequestPart("image") MultipartFile image) {
+        userInfoService.setUserImage(username, image);
+    }
+
+    @GetMapping("/getImage")
+    @Operation(summary = "Get user's image")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public String getUserImage(String username) {
+        return userInfoService.getUserImageName(username);
     }
 
 }
