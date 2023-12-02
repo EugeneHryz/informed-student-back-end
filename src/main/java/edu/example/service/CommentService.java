@@ -11,6 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
+
 @Service
 @RequiredArgsConstructor
 public class CommentService {
@@ -50,4 +53,14 @@ public class CommentService {
         commentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Comment not found"));
         commentRepository.deleteById(id);
     }
+
+    public void deleteCommentsOlderThen(int years, int moths, int days) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.YEAR, -years);
+        calendar.add(Calendar.MONTH, -moths);
+        calendar.add(Calendar.DATE, -days);
+
+        commentRepository.deleteAllByCreatedAtBefore(new Timestamp(calendar.getTimeInMillis()));
+    }
+
 }
