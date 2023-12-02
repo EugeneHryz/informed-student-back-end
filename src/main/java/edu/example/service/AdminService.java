@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class AdminService {
 
     private final JobDetail jobDetail;
-    private Trigger trigger;
+    private final Trigger trigger;
     private final Scheduler scheduler;
     private final Logger logger;
 
@@ -25,20 +25,20 @@ public class AdminService {
 
     /**
      * Changes time interval at which old comments are deleted
+     * @param seconds Time interval in seconds
+     * @throws SchedulerException If seconds value is invalid, or other scheduling error accrued
      */
-    public synchronized void changeOldCommentsDeletionTime(int hours, int minutes, int seconds) throws SchedulerException {
+    public synchronized void changeOldCommentsDeletionTime(int seconds) throws SchedulerException {
         Trigger newTrigger = TriggerBuilder.newTrigger().forJob(jobDetail)
                 .withIdentity(trigger.getKey().getName())
-                .withSchedule(SimpleScheduleBuilder.repeatSecondlyForever(
-                        (int) (TimeUnit.HOURS.toSeconds(hours)
-                                + TimeUnit.MINUTES.toSeconds(minutes)
-                                + TimeUnit.SECONDS.toSeconds(seconds))
-                )).build();
-
+                .withSchedule(SimpleScheduleBuilder.repeatSecondlyForever(seconds))
+                .build();
         scheduler.rescheduleJob(trigger.getKey(), newTrigger);
 
         logger.info(String.format("Old comments deletion time changed to: %dh %dm %ds",
-                hours, minutes, seconds));
+                seconds / 60 / 60,
+                (seconds / 60) % 60,
+                seconds % 60));
     }
 
 }
