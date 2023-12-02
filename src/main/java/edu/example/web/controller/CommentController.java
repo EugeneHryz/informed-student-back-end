@@ -33,7 +33,7 @@ public class CommentController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created successfully"),
             @ApiResponse(responseCode = "404", description = "Post not found"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized"),
             @ApiResponse(responseCode = "400", description = "Parsing / validation error")
     })
     public CommentResponseDto create(@RequestBody @Valid CreateCommentRequestDto createCommentRequestDto,
@@ -49,7 +49,7 @@ public class CommentController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Comment not found"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized"),
     })
     public void delete(@PathVariable Long id, @AuthenticationPrincipal UserInfoDetails userDetails) {
         if (!(

@@ -32,7 +32,7 @@ public class FolderController {
     @Operation(description = "Create folder")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created successfully"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized"),
             @ApiResponse(responseCode = "400", description = "Parsing / validation error"),
             @ApiResponse(responseCode = "404", description = "Subject not found"),
             @ApiResponse(responseCode = "409", description = "Duplicate folder")
@@ -51,7 +51,7 @@ public class FolderController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Folder not found"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised")
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
     })
     public void delete(@PathVariable Long id) {
         folderService.deleteFolder(id);

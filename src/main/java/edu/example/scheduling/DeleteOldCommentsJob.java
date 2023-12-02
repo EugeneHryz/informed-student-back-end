@@ -1,6 +1,5 @@
 package edu.example.scheduling;
 
-import edu.example.Application;
 import edu.example.service.CommentService;
 import org.jetbrains.annotations.NotNull;
 import org.quartz.DisallowConcurrentExecution;
@@ -12,22 +11,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
 
+import java.text.MessageFormat;
+
 @Component
 @DisallowConcurrentExecution
 public class DeleteOldCommentsJob extends QuartzJobBean {
 
+    private static final Logger logger = LoggerFactory.getLogger(DeleteOldCommentsJob.class);
     private final CommentService commentService;
-    private final Logger logger;
+
+    private Integer ageOfComments;
 
     @Autowired
     public DeleteOldCommentsJob(CommentService commentService) {
         this.commentService = commentService;
-        logger = LoggerFactory.getLogger(Application.class);
     }
 
     @Override
     protected void executeInternal(@NotNull JobExecutionContext context) throws JobExecutionException {
-        commentService.deleteCommentsOlderThen(2, 0, 0);
-        logger.info("Deleted old comments");
+        commentService.deleteCommentsOlderThen(0, 0, ageOfComments);
+
+        logger.info(MessageFormat.format("Deleted comments that are {0} days old", ageOfComments));
+    }
+
+    public void setAgeOfComments(Integer ageOfComments) {
+        this.ageOfComments = ageOfComments;
     }
 }
