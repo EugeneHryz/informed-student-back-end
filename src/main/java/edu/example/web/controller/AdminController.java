@@ -1,6 +1,7 @@
 package edu.example.web.controller;
 
 import edu.example.dto.PageResponse;
+import edu.example.dto.admin.UpdateUserBanRequestDto;
 import edu.example.dto.user.UserResponseDto;
 import edu.example.mapper.UserMapper;
 import edu.example.service.AdminService;
@@ -15,6 +16,7 @@ import org.hibernate.validator.constraints.Range;
 import org.quartz.SchedulerException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -82,8 +84,7 @@ public class AdminController {
 
     @PostMapping("/users/ban")
     @Operation(description = "Change user ban status")
-    public UserResponseDto updateUserBanStatus(@RequestParam Long id,
-                                               @RequestParam Boolean isBanned) {
-        return userMapper.toUserResponseDto(userService.updateUserIsBanned(id, isBanned));
+    public UserResponseDto updateUserBanStatus(@RequestBody @Valid UpdateUserBanRequestDto dto) {
+        return userMapper.toUserResponseDto(userService.updateUserBanStatus(dto.getUserId(), dto.isBanned()));
     }
 }
