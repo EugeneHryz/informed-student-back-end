@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2023-12-03-users-add-is-banned-column" author="emil">
+
+        <addColumn tableName="users">
+            <column name="is_banned" type="BOOLEAN" defaultValueBoolean="false"/>
+        </addColumn>
+        <addNotNullConstraint tableName="users" columnName="is_banned"/>
+
+    </changeSet>
+
+</databaseChangeLog>

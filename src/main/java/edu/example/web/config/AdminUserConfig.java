@@ -31,10 +31,7 @@ public class AdminUserConfig {
         if (adminUsers.size() > 1) {
             throw new RuntimeException("Unexpected: there is more than one administrator");
         }
-        User admin = new User();
-        if (!adminUsers.isEmpty()) {
-            admin.setId(adminUsers.get(0).getId());
-        }
+        User admin = adminUsers.isEmpty() ? new User() : adminUsers.get(0);
         admin.setUsername(username);
         admin.setPassword(passwordEncoder.encode(password));
         admin.setRole(Role.ADMIN);

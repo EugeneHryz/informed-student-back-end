@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -41,7 +42,7 @@ public class PostRepositoryTest {
         // given
         var subject = subjectRepository.save(new Subject(0L, "physics", 3));
         var folder = folderRepository.save(new Folder(0L, subject, FolderType.TEST));
-        var user = userRepository.save(new User(0L, "1234", "someone", "3534534", Role.USER));
+        var user = userRepository.save(new User(0L, "1234", "someone", "3534534", Role.USER, false, List.of()));
 
         // when
         var newPost = postRepository.save(new Post(0L, folder,
@@ -57,7 +58,7 @@ public class PostRepositoryTest {
     public void getPostByFolder() {
         // given
         var subject = subjectRepository.save(new Subject(0L, "physics", 3));
-        var user = userRepository.save(new User(0L, "1234", "someone", "3534534", Role.USER));
+        var user = userRepository.save(new User(0L, "1234", "someone", "3534534", Role.USER, false, List.of()));
 
         var folderTest = folderRepository.save(new Folder(0L, subject, FolderType.TEST));
         var postTest1 = postRepository.save(new Post(0L, folderTest,
