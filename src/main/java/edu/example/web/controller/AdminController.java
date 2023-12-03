@@ -1,30 +1,32 @@
 package edu.example.web.controller;
 
+import edu.example.dto.PageResponse;
+import edu.example.dto.user.UserResponseDto;
+import edu.example.mapper.UserMapper;
 import edu.example.service.AdminService;
+import edu.example.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 import org.quartz.SchedulerException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @PreAuthorize("hasAuthority('ADMIN')")
 @RequestMapping("/admin")
 @Tag(name = "Admin", description = "Admin panel functionality")
+@RequiredArgsConstructor
 public class AdminController {
 
     private final AdminService adminService;
-
-    public AdminController(AdminService adminService) {
-        this.adminService = adminService;
-    }
+    private final UserService userService;
+    private final UserMapper userMapper;
 
     @PostMapping("/commentsCleaningInterval")
     @Operation(description = "Changes time interval at which old comments are deleted")
@@ -44,5 +46,44 @@ public class AdminController {
     })
     public void changeAgeOfCommentsToDelete(@RequestParam @Valid @Range(min = 1) int days) throws SchedulerException {
         adminService.changeAgeOfCommentsToDelete(days);
+    }
+
+    @GetMapping("/users")
+    @Operation(description = "Receive users")
+    public PageResponse<UserResponseDto> getUsers(@RequestParam(required = false) Boolean isBanned,
+                                                  @RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(defaultValue = "5") int size) {
+        var result = userService.getUsers(isBanned, page, size);
+
+        var response = new PageResponse<UserResponseDto>();
+        response.setPageSize(result.getSize());
+        response.setPageNumber(result.getNumber());
+        response.setTotalPages(result.getTotalPages());
+        response.setTotalSize(result.getTotalElements());
+        response.setContent(result.getContent().stream().map(userMapper::toUserResponseDto).toList());
+
+        return response;
+    }
+
+    @DeleteMapping("/users")
+    @Operation(description = "Delete user")
+    public void deleteUser(@RequestParam Long id) {
+        userService.deleteUser(id);
+    }
+
+    @GetMapping("/users/search")
+    @Operation(description = "Search users by username or email")
+    public List<UserResponseDto> getUsersByUsernameOrEmail(@RequestParam String search) {
+        var result = userService.getUsersByUsernameOrEmail(search);
+        return result.stream()
+                .map(userMapper::toUserResponseDto)
+                .toList();
+    }
+
+    @PostMapping("/users/ban")
+    @Operation(description = "Change user ban status")
+    public UserResponseDto updateUserBanStatus(@RequestParam Long id,
+                                               @RequestParam Boolean isBanned) {
+        return userMapper.toUserResponseDto(userService.updateUserIsBanned(id, isBanned));
     }
 }
