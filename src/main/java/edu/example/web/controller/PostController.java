@@ -19,6 +19,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 
@@ -56,7 +57,7 @@ public class PostController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Post not found"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised")
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
     })
     public void delete(@PathVariable Long id, @AuthenticationPrincipal UserInfoDetails userDetails) {
         if (!(

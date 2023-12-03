@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 
@@ -30,7 +31,7 @@ public class SubjectController {
     @Operation(description = "Create subject")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created successfully"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized"),
             @ApiResponse(responseCode = "409", description = "Duplicate subject"),
             @ApiResponse(responseCode = "400", description = "Parsing/validation error")
     })
@@ -48,7 +49,7 @@ public class SubjectController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Subject not found"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised")
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
     })
     public void delete(@PathVariable Long id) {
         subjectService.deleteSubject(id);
