@@ -31,7 +31,7 @@ public class AdminController {
     private final UserMapper userMapper;
 
     @PostMapping("/commentsCleaningInterval")
-    @Operation(description = "Changes time interval at which old comments are deleted")
+    @Operation(description = "Change time interval at which old comments are deleted")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Changes successfully"),
             @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
@@ -41,7 +41,7 @@ public class AdminController {
     }
 
     @PostMapping("/ageOfCommentsToDelete")
-    @Operation(description = "Changes the age of comments that are considered old and will be deleted automatically")
+    @Operation(description = "Change the age of comments that are considered old and will be deleted automatically")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Changes successfully"),
             @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
@@ -51,7 +51,11 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    @Operation(description = "Receive users")
+    @Operation(description = "Get users by ban status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
+    })
     public PageResponse<UserResponseDto> getUsers(@RequestParam(required = false) Boolean isBanned,
                                                   @RequestParam(defaultValue = "0") int page,
                                                   @RequestParam(defaultValue = "5") int size) {
@@ -68,13 +72,21 @@ public class AdminController {
     }
 
     @DeleteMapping("/users")
-    @Operation(description = "Delete user")
+    @Operation(description = "Hard delete user by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deleted successfully"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
+    })
     public void deleteUser(@RequestParam Long id) {
         userService.deleteUser(id);
     }
 
     @GetMapping("/users/search")
-    @Operation(description = "Search users by username or email")
+    @Operation(description = "Search users by their email or username")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
+    })
     public List<UserResponseDto> getUsersByUsernameOrEmail(@RequestParam String search) {
         var result = userService.getUsersByUsernameOrEmail(search);
         return result.stream()
@@ -83,7 +95,11 @@ public class AdminController {
     }
 
     @PostMapping("/users/ban")
-    @Operation(description = "Change user ban status")
+    @Operation(description = "Update user ban status")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
+    })
     public UserResponseDto updateUserBanStatus(@RequestBody @Valid UpdateUserBanRequestDto dto) {
         return userMapper.toUserResponseDto(userService.updateUserBanStatus(dto.getUserId(), dto.isBanned()));
     }

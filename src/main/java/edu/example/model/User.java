@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.List;
 
 @Getter
 @Setter
@@ -35,9 +34,6 @@ public class User {
 
     @Column(name = "is_banned", nullable = false)
     private boolean isBanned;
-
-    @OneToMany(mappedBy = "user", orphanRemoval = true)
-    private List<Token> tokens;
 
 //    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 //    @PrimaryKeyJoinColumn(name = "username")
