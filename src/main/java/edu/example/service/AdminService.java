@@ -24,7 +24,7 @@ public class AdminService {
     /**
      * Changes time interval at which old comments are deleted
      * @param seconds Time interval in seconds
-     * @throws SchedulerException If seconds value is invalid, or other scheduling error accrued
+     * @throws SchedulerException If seconds value is invalid, or other scheduling error occurred
      */
     public synchronized void changeOldCommentsDeletionInterval(int seconds) throws SchedulerException {
         Trigger newTrigger = TriggerBuilder.newTrigger().forJob(jobDetail)
@@ -39,6 +39,13 @@ public class AdminService {
                 seconds % 60));
     }
 
+    /**
+     * Changes the age of comments that are considered old and will be deleted.
+     * This method creates new job definition object with new 'ageOfComments' param
+     * and replaces existing job definition with the same name.
+     * @param newAgeValue age of comments to delete (in days)
+     * @throws SchedulerException If there is a scheduler error
+     */
     public synchronized void changeAgeOfCommentsToDelete(int newAgeValue) throws SchedulerException {
         JobDetail deleteCommentsJobDetail = JobBuilder.newJob(DeleteOldCommentsJob.class)
                 .storeDurably()
