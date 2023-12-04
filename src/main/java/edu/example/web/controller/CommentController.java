@@ -5,7 +5,6 @@ import edu.example.dto.comment.CommentResponseDto;
 import edu.example.dto.comment.CreateCommentRequestDto;
 import edu.example.mapper.CommentMapper;
 import edu.example.model.Comment;
-import edu.example.model.Role;
 import edu.example.service.CommentService;
 import edu.example.web.security.UserInfoDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,7 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +43,7 @@ public class CommentController {
         return commentMapper.toCommentResponseDto(comment);
     }
 
+    @PreAuthorize("hasAuthority('MODERATOR') || @commentSecurity.isAllowedToModifyComment(authentication, #id)")
     @DeleteMapping("/{id}")
     @Operation(description = "Delete comment by id")
     @ApiResponses(value = {
@@ -51,13 +51,7 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Comment not found"),
             @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized"),
     })
-    public void delete(@PathVariable Long id, @AuthenticationPrincipal UserInfoDetails userDetails) {
-        if (!(
-                userDetails.getRoles().stream().anyMatch(it -> it.getAuthority().equals(Role.MODERATOR.name())) ||
-                        commentService.getComment(id).getUser().getId().equals(userDetails.getUser().getId())
-        )) {
-            throw new AccessDeniedException("");
-        }
+    public void delete(@PathVariable Long id) {
         commentService.deleteComment(id);
     }
 
