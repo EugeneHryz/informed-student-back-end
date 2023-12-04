@@ -1,13 +1,18 @@
 package edu.example.repository;
 
 import edu.example.model.*;
-import edu.example.web.config.MinioTestConfig;
-import edu.example.web.config.PostgresTestConfig;
+import edu.example.config.MinioTestConfig;
+import edu.example.config.PostgresTestConfig;
+import io.minio.MinioClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.quartz.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.sql.Timestamp;
@@ -37,6 +42,7 @@ public class CommentRepositoryTest {
         postRepository.deleteAll();
         folderRepository.deleteAll();
         subjectRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test

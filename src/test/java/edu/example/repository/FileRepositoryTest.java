@@ -1,8 +1,8 @@
 package edu.example.repository;
 
 import edu.example.model.*;
-import edu.example.web.config.MinioTestConfig;
-import edu.example.web.config.PostgresTestConfig;
+import edu.example.config.MinioTestConfig;
+import edu.example.config.PostgresTestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +37,7 @@ public class FileRepositoryTest {
         postRepository.deleteAll();
         folderRepository.deleteAll();
         subjectRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test

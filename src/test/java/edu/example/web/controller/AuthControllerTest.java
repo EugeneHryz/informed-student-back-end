@@ -7,7 +7,7 @@ import edu.example.dto.auth.RegisterRequestDto;
 import edu.example.repository.TokenRepository;
 import edu.example.repository.UserRepository;
 import edu.example.service.AuthService;
-import edu.example.web.config.PostgresTestConfig;
+import edu.example.config.PostgresTestConfig;
 import edu.example.web.security.SecurityConstants;
 import io.minio.MinioClient;
 import jakarta.servlet.http.Cookie;
