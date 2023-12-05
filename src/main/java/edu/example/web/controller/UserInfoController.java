@@ -4,12 +4,15 @@ import edu.example.dto.userInfo.UserInfoCreateUpdateDto;
 import edu.example.dto.userInfo.UserInfoResponseDto;
 import edu.example.mapper.UserInfoMapper;
 import edu.example.service.UserInfoService;
+import edu.example.web.security.UserInfoDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +25,7 @@ public class UserInfoController {
 
     private final UserInfoMapper userInfoMapper;
 
+    @Autowired
     public UserInfoController(UserInfoService userInfoService, UserInfoMapper userInfoMapper) {
         this.userInfoService = userInfoService;
         this.userInfoMapper = userInfoMapper;
@@ -32,13 +36,12 @@ public class UserInfoController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Saved/updated successfully"),
             @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
-            @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "400", description = "Parsing / validation error")
     })
-    public UserInfoResponseDto createOrUpdateUserInfo(@RequestBody @Valid UserInfoCreateUpdateDto userInfo) {
+    public UserInfoResponseDto createOrUpdateUserInfo(@RequestBody @Valid UserInfoCreateUpdateDto userInfo,
+                                                      @AuthenticationPrincipal UserInfoDetails userDetails) {
         return userInfoMapper.toUserInfoResponseDto(
-                userInfoService.createOrUpdateUserInfo(
-                        userInfoMapper.toUserInfo(userInfo)));
+                userInfoService.createOrUpdateUserInfo(userInfo, userDetails.getUser()));
     }
 
     @GetMapping
@@ -50,8 +53,7 @@ public class UserInfoController {
             @ApiResponse(responseCode = "400", description = "Parsing / validation error")
     })
     public UserInfoResponseDto getUserInfo(String username) {
-        return userInfoMapper.toUserInfoResponseDto(
-                userInfoService.getUserInfo(username));
+        return userInfoMapper.toUserInfoResponseDto(userInfoService.getUserInfo(username));
     }
 
     @PostMapping(path = "/setImage", consumes = {MediaType.IMAGE_JPEG_VALUE})
