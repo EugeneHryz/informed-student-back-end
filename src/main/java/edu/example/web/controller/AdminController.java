@@ -103,4 +103,14 @@ public class AdminController {
     public UserResponseDto updateUserBanStatus(@RequestBody @Valid UpdateUserBanRequestDto dto) {
         return userMapper.toUserResponseDto(userService.updateUserBanStatus(dto.getUserId(), dto.isBanned()));
     }
+
+    @GetMapping("/users/getByComment")
+    @Operation(description = "Get user by comment id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
+    })
+    public UserResponseDto getUserByCommentId(@RequestParam Long id) {
+        return userMapper.toUserResponseDto(userService.getUserByCommentId(id));
+    }
 }
