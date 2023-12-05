@@ -40,6 +40,11 @@ public class UserService {
         return userRepository.findByUsernameOrEmail(searchTerm);
     }
 
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(
+                () -> new EntityNotFoundException("User with specified username not found"));
+    }
+
     /**
      * Set user's new ban status. If the user is getting banned, then all their tokens will be deactivated.
      * This way the user won't be able to perform any authorized requests after ban.
