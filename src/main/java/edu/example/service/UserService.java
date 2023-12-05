@@ -23,6 +23,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserInfoRepository userInfoRepository;
     private final TokenService tokenService;
+    private final CommentService commentService;
 
     public Page<User> getUsers(Boolean isBanned, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(
@@ -70,5 +71,9 @@ public class UserService {
             userInfoRepository.deleteById(user.getUsername());
         } catch (EntityNotFoundException ignored) {}
         userRepository.deleteById(id);
+    }
+
+    public User getUserByCommentId(Long commentId) {
+        return commentService.getComment(commentId).getUser();
     }
 }
