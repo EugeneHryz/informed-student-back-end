@@ -37,12 +37,6 @@ public class UserInfoService {
         return optional.get();
     }
 
-    public String getUserImageName(String username) {
-        return userInfoRepository.findById(username)
-                .orElseThrow(() -> new EntityNotFoundException("User info not found"))
-                .getUserImage();
-    }
-
     public String setUserImage(String username, MultipartFile file) {
         if (!userRepository.existsByUsername(username))
             throw new EntityNotFoundException("User not found");
@@ -66,5 +60,4 @@ public class UserInfoService {
             throw new RuntimeException(e);
         }
     }
-
 }

@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Getter
 @RequiredArgsConstructor
-public class UserInfoDetails implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
 
     private final User user;
 

@@ -6,7 +6,7 @@ import edu.example.dto.comment.CreateCommentRequestDto;
 import edu.example.mapper.CommentMapper;
 import edu.example.model.Comment;
 import edu.example.service.CommentService;
-import edu.example.web.security.UserInfoDetails;
+import edu.example.web.security.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -36,7 +36,7 @@ public class CommentController {
             @ApiResponse(responseCode = "400", description = "Parsing / validation error")
     })
     public CommentResponseDto create(@RequestBody @Valid CreateCommentRequestDto createCommentRequestDto,
-                                     @AuthenticationPrincipal UserInfoDetails userDetails) {
+                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
         Comment comment = commentService.createComment(createCommentRequestDto,
                 userDetails.getUser());
 

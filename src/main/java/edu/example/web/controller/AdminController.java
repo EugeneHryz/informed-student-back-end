@@ -71,16 +71,6 @@ public class AdminController {
         return response;
     }
 
-    @DeleteMapping("/users")
-    @Operation(description = "Hard delete user by id")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Deleted successfully"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
-    })
-    public void deleteUser(@RequestParam Long id) {
-        userService.deleteUser(id);
-    }
-
     @GetMapping("/users/search")
     @Operation(description = "Search users by their email or username")
     @ApiResponses(value = {
