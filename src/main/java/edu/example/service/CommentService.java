@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
@@ -50,10 +51,9 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    public Comment updateComment(Long id, Long postId, String text) {
-        var comment = new Comment();
-        comment.setId(id);
-        comment.setPost(postRepository.getReferenceById(postId));
+    public Comment updateComment(Long id, String text) {
+        var comment = commentRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Comment not found"));
         comment.setText(text);
         return commentRepository.save(comment);
     }

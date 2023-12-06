@@ -19,8 +19,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByUsername(String username);
 
-    Page<User> findAllByBannedIs(boolean isBanned, Pageable pageable);
+    // IDEA shows a warning "Cannot resolve property 'isBanned'",
+    // which is wrong (method compiles and works)
+    // Don't trust IDEA :)
+    Page<User> findAllByIsBanned(boolean isBanned, Pageable pageable);
 
-    @Query("SELECT u FROM User u WHERE LOWER(u.username) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
+    @Query( "SELECT u " +
+            "FROM User u " +
+            "WHERE LOWER(u.username) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+                "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
     List<User> findByUsernameOrEmail(@Param("searchTerm") String searchTerm);
 }

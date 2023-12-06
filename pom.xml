@@ -220,7 +220,7 @@
 
         <configuration>
           <includes>
-            <include>edu/example/springmvcdemo/**/*Service*</include>
+            <include>edu/example/**/*Service*</include>
           </includes>
         </configuration>
 

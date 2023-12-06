@@ -14,6 +14,8 @@ public class SchedulingConfiguration {
     public static final String DELETE_OLD_COMMENTS_JOB_NAME = "delete_old_comments_job";
     public static final String DELETE_OLD_COMMENTS_TRIGGER_NAME = "delete_old_comments_trigger";
 
+    public static final String OLD_COMMENTS_DELETION_AGE_KEY = "ageOfComments";
+
     @Value("${scheduling.cleaning.comment.defaultAge}")
     private int ageOfCommentsToDelete;
 
@@ -24,7 +26,7 @@ public class SchedulingConfiguration {
                 .withIdentity(DELETE_OLD_COMMENTS_JOB_NAME)
                 .withDescription(MessageFormat.format("Deletes comments older than {0} days", ageOfCommentsToDelete))
                 .requestRecovery(true)
-                .usingJobData("ageOfComments", Integer.toString(ageOfCommentsToDelete))
+                .usingJobData(OLD_COMMENTS_DELETION_AGE_KEY, Integer.toString(ageOfCommentsToDelete))
                 .build();
     }
 

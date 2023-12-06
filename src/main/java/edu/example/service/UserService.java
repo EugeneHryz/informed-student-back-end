@@ -2,6 +2,8 @@ package edu.example.service;
 
 import edu.example.exception.EntityNotFoundException;
 import edu.example.model.User;
+import edu.example.repository.TokenRepository;
+import edu.example.repository.UserInfoRepository;
 import edu.example.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +23,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final TokenService tokenService;
+    private final TokenRepository tokenRepository;
     private final CommentService commentService;
+    private final UserInfoRepository userInfoRepository;
 
     public Page<User> getUsers(Boolean isBanned, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(
@@ -29,11 +33,16 @@ public class UserService {
         ));
 
         if (nonNull(isBanned)) {
-            return userRepository.findAllByBannedIs(isBanned, pageable);
+            return userRepository.findAllByIsBanned(isBanned, pageable);
         }
         return userRepository.findAll(pageable);
     }
 
+    /**
+     * Finds all Users with username or email matching regex
+     * @param searchTerm regex
+     * @return Matching Users
+     */
     public List<User> getUsersByUsernameOrEmail(String searchTerm) {
         return userRepository.findByUsernameOrEmail(searchTerm);
     }
@@ -61,6 +70,16 @@ public class UserService {
         user.setBanned(isBanned);
         user = userRepository.save(user);
         return user;
+    }
+
+    @Transactional
+    public void deleteUser(Long id) {
+        var user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
+        try {
+            userInfoRepository.deleteById(user.getUsername());
+        } catch (EntityNotFoundException ignored) {}
+        tokenRepository.deleteAllByUser_Id(id);
+        userRepository.deleteById(id);
     }
 
     /**
