@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.text.MessageFormat;
 
 import static edu.example.scheduling.SchedulingConfiguration.DELETE_OLD_COMMENTS_JOB_NAME;
+import static edu.example.scheduling.SchedulingConfiguration.OLD_COMMENTS_DELETION_AGE_KEY;
 
 @RequiredArgsConstructor
 @Service
@@ -52,7 +53,7 @@ public class AdminService {
                 .withIdentity(DELETE_OLD_COMMENTS_JOB_NAME)
                 .withDescription(MessageFormat.format("Deletes comments older than {0} days", newAgeValue))
                 .requestRecovery(true)
-                .usingJobData("ageOfComments", Integer.toString(newAgeValue))
+                .usingJobData(OLD_COMMENTS_DELETION_AGE_KEY, Integer.toString(newAgeValue))
                 .build();
         scheduler.addJob(deleteCommentsJobDetail, true);
     }

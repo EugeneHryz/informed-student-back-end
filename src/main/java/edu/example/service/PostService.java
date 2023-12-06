@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static java.util.Objects.nonNull;
 
@@ -84,16 +85,17 @@ public class PostService {
         return postRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Post not found"));
     }
 
-    public Post createPost(Long folderId, String text) {
+    public Post createPost(Long folderId, String text, User author) {
         var post = new Post();
         post.setFolder(folderService.getFolder(folderId));
         post.setText(text);
+        post.setUser(author);
         return postRepository.save(post);
     }
 
     public Post updatePost(Long id, Long folder, String text) {
-        var post = new Post();
-        post.setId(id);
+        var post = postRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No post by this id"));
         post.setFolder(folderService.getFolder(folder));
         post.setText(text);
         return postRepository.save(post);

@@ -1,26 +1,21 @@
 package edu.example.repository;
 
+import edu.example.TestContext;
 import edu.example.repository.exception.FileReadException;
 import edu.example.repository.exception.FileWriteException;
-import edu.example.config.MinioTestConfig;
-import edu.example.config.PostgresTestConfig;
 import io.minio.errors.ErrorResponseException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
 
 import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@ContextConfiguration(initializers = {MinioTestConfig.Initializer.class, PostgresTestConfig.Initializer.class})
-public class MinioFileStorageServiceTest {
+public class MinioFileStorageServiceTest extends TestContext {
 
     @Autowired
     MinioFileStorage fileStorage;

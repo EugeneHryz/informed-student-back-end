@@ -1,29 +1,24 @@
 package edu.example.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.example.TestContext;
 import edu.example.dto.auth.AuthUserDto;
 import edu.example.dto.auth.LoginRequestDto;
 import edu.example.dto.auth.RegisterRequestDto;
 import edu.example.repository.TokenRepository;
 import edu.example.repository.UserRepository;
 import edu.example.service.AuthService;
-import edu.example.config.PostgresTestConfig;
 import edu.example.web.security.SecurityConstants;
 import io.minio.MinioClient;
 import jakarta.servlet.http.Cookie;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mockito;
-import org.quartz.Scheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -31,32 +26,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-@AutoConfigureMockMvc
-@SpringBootTest
-@ContextConfiguration(initializers = {PostgresTestConfig.Initializer.class})
-class AuthControllerTest {
+class AuthControllerTest extends TestContext {
 
     static final String EMAIL = "user@email.com";
     static final String PASSWORD = "1234qwerQkL*";
     static final String USERNAME = "username";
 
-    @TestConfiguration
-    public static class Configuration {
-
-        @Bean
-        public MinioClient minioClient(){
-            return Mockito.mock(MinioClient.class);
-        }
-
-        @Bean
-        public Scheduler scheduler() {
-            return Mockito.mock(Scheduler.class);
-        }
-    }
-
-    @Autowired
-    MinioClient minioClient;
     @Autowired
     MockMvc mockMvc;
     @Autowired
@@ -69,6 +44,7 @@ class AuthControllerTest {
     AuthService authService;
 
     @BeforeEach
+    @AfterEach
     public void clear() {
         tokenRepository.deleteAll();
         userRepository.deleteAll();
