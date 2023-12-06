@@ -5,5 +5,4 @@ public enum Gender {
     MALE,
     FEMALE,
     MECHANIC
-
 }

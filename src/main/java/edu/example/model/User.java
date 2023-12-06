@@ -34,8 +34,4 @@ public class User {
 
     @Column(name = "is_banned", nullable = false)
     private boolean isBanned;
-
-//    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-//    @PrimaryKeyJoinColumn(name = "username")
-//    private UserInfo userInfo;
 }
