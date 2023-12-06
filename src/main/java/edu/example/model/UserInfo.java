@@ -3,6 +3,7 @@ package edu.example.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.sql.Date;
 
 @Entity
@@ -29,9 +30,4 @@ public class UserInfo {
 
     @Column
     private String specialty;
-
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @MapsId
-//    @JoinColumn(name = "username")
-//    private User user;
 }
