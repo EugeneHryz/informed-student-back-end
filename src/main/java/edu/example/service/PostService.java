@@ -31,14 +31,29 @@ public class PostService {
     private final FolderService folderService;
     private final FileStorageService fileStorageService;
 
+    /**
+     * Get posts in the given folder, sorted by creation time.
+     * @param pageNumber page number, starting with 0
+     * @param pageSize size of elements on the page
+     * @param folderId id of a folder
+     * @return Page object with information such as total number of posts, total number of pages, etc.
+     */
     public Page<Post> getPostsByFolder(int pageNumber, int pageSize, long folderId) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(
                 Sort.Order.desc("createdAt")
         ));
-
         return postRepository.findByFolderId(folderId, pageable);
     }
 
+    /**
+     * Creates post and saves files to object storage. File representation in the database (FileModel)
+     * is linked to a post.
+     * @param folderId id of a folder in which post is created
+     * @param user user who creates the post
+     * @param text text of the post
+     * @param files files to upload and associate with a post
+     * @return post object
+     */
     public Post createPostWithFiles(Long folderId, User user, String text, List<MultipartFile> files) {
         var post = new Post();
         post.setFolder(folderService.getFolder(folderId));

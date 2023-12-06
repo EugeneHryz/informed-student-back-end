@@ -37,7 +37,14 @@ public class UserInfoService {
         return optional.get();
     }
 
-    public String setUserImage(String username, MultipartFile file) {
+    /**
+     * Saves user profile image in object storage. Generated file name is saved into UserInfo object for that user.
+     * If UserInfo object does not exist it will be created.
+     * @param username username of a user
+     * @param file file to save
+     * @return generated file name
+     */
+    public String setUserProfileImage(String username, MultipartFile file) {
         if (!userRepository.existsByUsername(username))
             throw new EntityNotFoundException("User not found");
 

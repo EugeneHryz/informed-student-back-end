@@ -63,6 +63,12 @@ public class UserService {
         return user;
     }
 
+    /**
+     * Get user by his comment. This method is used only by admin to reveal identity of an
+     * anonymous commentator.
+     * @param commentId id of a comment
+     * @return user instance
+     */
     public User getUserByCommentId(Long commentId) {
         return commentService.getComment(commentId).getUser();
     }
