@@ -64,8 +64,8 @@ public class UserInfoController {
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "415", description = "File type not supported")
     })
-    public void setUserImage(@RequestParam String username,
-                             @RequestPart("image") MultipartFile image) {
-        userInfoService.setUserImage(username, image);
+    public void setUserProfileImage(@RequestParam String username,
+                                    @RequestPart("image") MultipartFile image) {
+        userInfoService.setUserProfileImage(username, image);
     }
 }

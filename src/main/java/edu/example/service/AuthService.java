@@ -11,14 +11,11 @@ import edu.example.web.security.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -31,6 +28,13 @@ public class AuthService {
     private final AuthenticationManager authManager;
     private final TokenService tokenService;
 
+    /**
+     * Creates user in the database with given username and password. It generates a token based on
+     * username and saves that token in the database. Every new user has a {@code USER} role
+     * @param registerRequest object that contains username, password and email
+     * @return user dto with roles and generated token
+     * @throws UnprocessableEntityException if user with that username already exists
+     */
     @Transactional
     public AuthUserDto register(RegisterRequestDto registerRequest) throws UnprocessableEntityException {
         Optional<User> existingUser = userRepository.findByUsername(registerRequest.getUsername());
@@ -51,6 +55,12 @@ public class AuthService {
                 .collect(Collectors.toSet()));
     }
 
+    /**
+     * Authenticates the user with provided username and password. It creates new active token and associates it
+     * with the user. All existing user token are deactivated.
+     * @param loginRequest object that contains username and password
+     * @return user dto with roles and generated token
+     */
     @Transactional
     public AuthUserDto login(LoginRequestDto loginRequest) {
         authManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
