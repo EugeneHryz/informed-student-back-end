@@ -25,6 +25,7 @@ public class UserService {
     private final TokenService tokenService;
     private final TokenRepository tokenRepository;
     private final CommentService commentService;
+    private final UserInfoRepository userInfoRepository;
 
     public Page<User> getUsers(Boolean isBanned, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(
@@ -79,6 +80,7 @@ public class UserService {
         } catch (EntityNotFoundException ignored) {}
         tokenRepository.deleteAllByUser_Id(id);
         userRepository.deleteById(id);
+    }
 
     /**
      * Get user by his comment. This method is used only by admin to reveal identity of an

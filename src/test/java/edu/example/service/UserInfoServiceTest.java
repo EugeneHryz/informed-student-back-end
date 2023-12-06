@@ -3,6 +3,7 @@ package edu.example.service;
 
 import edu.example.TestContext;
 import edu.example.dto.auth.RegisterRequestDto;
+import edu.example.dto.userInfo.UserInfoCreateUpdateDto;
 import edu.example.exception.EntityNotFoundException;
 import edu.example.exception.UnprocessableEntityException;
 import edu.example.model.Gender;
@@ -49,8 +50,9 @@ public class UserInfoServiceTest  extends TestContext {
         var user = userService.getUsers(false, 0, 1).get().findFirst().get();
 
         // when
-        var userInfo = userInfoService.createOrUpdateUserInfo(new UserInfo("username", "imageFile",
-                Date.valueOf("2000-01-01"), Gender.MALE, 1, "specialty"));
+        var userInfo = userInfoService.createOrUpdateUserInfo(new UserInfoCreateUpdateDto(
+                "2000-01-01", "MALE", 1,
+                "specialty", "imageFile"), user);
 
         // then
         assertEquals("username", userInfo.getUsername());
@@ -66,8 +68,9 @@ public class UserInfoServiceTest  extends TestContext {
         authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
         var user = userService.getUsers(false, 0, 1).get().findFirst().get();
 
-        userInfoService.createOrUpdateUserInfo(new UserInfo("username", "imageFile",
-                Date.valueOf("2000-01-01"), Gender.MALE, 1, "specialty"));
+        userInfoService.createOrUpdateUserInfo(new UserInfoCreateUpdateDto(
+                "2000-01-01", "MALE", 1,
+                "specialty", "imageFile"), user);
 
         // when
         var userInfo = userInfoService.getUserInfo("username");
@@ -81,54 +84,18 @@ public class UserInfoServiceTest  extends TestContext {
     }
 
     @Test
-    void getUserImageName() throws UnprocessableEntityException {
-        // given
-        authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
-        var user = userService.getUsers(false, 0, 1).get().findFirst().get();
-
-        userInfoService.createOrUpdateUserInfo(new UserInfo("username", "imageFile",
-                Date.valueOf("2000-01-01"), Gender.MALE, 1, "specialty"));
-
-        // when
-        var imageName = userInfoService.getUserImageName("username");
-
-        // then
-        assertEquals("imageFile", imageName);
-    }
-
-    @Test
-    void getUserImageNameNotFound() throws UnprocessableEntityException {
-        // given
-        authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
-        var user = userService.getUsers(false, 0, 1).get().findFirst().get();
-
-        userInfoService.createOrUpdateUserInfo(new UserInfo("username", "imageFile",
-                Date.valueOf("2000-01-01"), Gender.MALE, 1, "specialty"));
-
-        // when
-        assertThrows(EntityNotFoundException.class, () ->
-                userInfoService.getUserImageName("notexists"));
-    }
-
-    @Test
     void getUserInfoNotFound() throws UnprocessableEntityException {
         // given
         authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
         var user = userService.getUsers(false, 0, 1).get().findFirst().get();
 
-        userInfoService.createOrUpdateUserInfo(new UserInfo("username", "imageFile",
-                Date.valueOf("2000-01-01"), Gender.MALE, 1, "specialty"));
+        userInfoService.createOrUpdateUserInfo(new UserInfoCreateUpdateDto(
+                "2000-01-01", "MALE", 1,
+                "specialty", "imageFile"), user);
 
         // when
         assertThrows(EntityNotFoundException.class, () ->
                 userInfoService.getUserInfo("notexists"));
-    }
-
-    @Test
-    void createUserInfoNoUser() throws UnprocessableEntityException {
-        assertThrows(EntityNotFoundException.class, () ->
-                userInfoService.createOrUpdateUserInfo(new UserInfo("username", "imageFile",
-                Date.valueOf("2000-01-01"), Gender.MALE, 1, "specialty")));
     }
 
     @Test
@@ -137,13 +104,14 @@ public class UserInfoServiceTest  extends TestContext {
         authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
         var user = userService.getUsers(false, 0, 1).get().findFirst().get();
 
-        var userInfo = userInfoService.createOrUpdateUserInfo(new UserInfo("username",
-                "imageFile", Date.valueOf("2000-01-01"), Gender.MALE,
-                1, "specialty"));
+        var userInfo = userInfoService.createOrUpdateUserInfo(new UserInfoCreateUpdateDto(
+                "2000-01-01", "MALE", 1,
+                "specialty", "imageFile"), user);
 
         // when
-        userInfoService.createOrUpdateUserInfo(new UserInfo("username", "newFile",
-                Date.valueOf("2001-02-02"), Gender.FEMALE, 2, "newSpecialty"));
+        userInfoService.createOrUpdateUserInfo(new UserInfoCreateUpdateDto(
+                "2001-02-02", "FEMALE", 2,
+                "newSpecialty", "newFile"), user);
 
         // then
         userInfo = userInfoService.getUserInfo("username");
