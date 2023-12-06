@@ -22,9 +22,9 @@ import static java.util.Objects.nonNull;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final UserInfoRepository userInfoRepository;
     private final TokenService tokenService;
     private final TokenRepository tokenRepository;
+    private final CommentService commentService;
 
     public Page<User> getUsers(Boolean isBanned, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(
@@ -44,6 +44,11 @@ public class UserService {
      */
     public List<User> getUsersByUsernameOrEmail(String searchTerm) {
         return userRepository.findByUsernameOrEmail(searchTerm);
+    }
+
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(
+                () -> new EntityNotFoundException("User with specified username not found"));
     }
 
     /**
@@ -74,5 +79,14 @@ public class UserService {
         } catch (EntityNotFoundException ignored) {}
         tokenRepository.deleteAllByUser_Id(id);
         userRepository.deleteById(id);
+
+    /**
+     * Get user by his comment. This method is used only by admin to reveal identity of an
+     * anonymous commentator.
+     * @param commentId id of a comment
+     * @return user instance
+     */
+    public User getUserByCommentId(Long commentId) {
+        return commentService.getComment(commentId).getUser();
     }
 }

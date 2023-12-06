@@ -6,7 +6,7 @@ import edu.example.dto.post.PostResponseDto;
 import edu.example.mapper.PostMapper;
 import edu.example.model.Post;
 import edu.example.service.PostService;
-import edu.example.web.security.UserInfoDetails;
+import edu.example.web.security.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -40,7 +40,7 @@ public class PostController {
     })
     public PostResponseDto create(@RequestPart("post") @Valid CreatePostRequestDto createPostRequestDto,
                                   @RequestPart(value = "files", required = false) List<MultipartFile> files,
-                                  @AuthenticationPrincipal UserInfoDetails userDetails) {
+                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         Post post = postService.createPostWithFiles(
                 createPostRequestDto.getFolderId(),

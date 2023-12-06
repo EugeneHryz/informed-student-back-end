@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class MinioFileStorageService implements FileStorageService {
     private final FileRepository fileRepository;
 
     /**
-     * save file in the Minio storage with file extension as prefix
+     * Save file in the Minio storage with file extension as prefix
      * @param file file to save
      * @return generated file name
      * @throws IOException

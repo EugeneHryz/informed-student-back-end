@@ -34,6 +34,10 @@ public class DeleteOldCommentsJob extends QuartzJobBean {
         logger.info(MessageFormat.format("Deleted comments that are {0} days old", ageOfComments));
     }
 
+    /**
+     * This method is used by JobFactory to inject data map value {@code ageOfComments}
+     * @param ageOfComments age of comments to be deleted
+     */
     public void setAgeOfComments(Integer ageOfComments) {
         this.ageOfComments = ageOfComments;
     }

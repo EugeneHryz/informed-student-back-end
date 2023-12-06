@@ -24,11 +24,17 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
 
+    /**
+     * Get comments associated with a given post, sorted by creation time.
+     * @param pageNumber page number, starting with 0
+     * @param pageSize size of elements on the page
+     * @param postId if of a post
+     * @return Page object with information such as total number of posts, total number of pages, etc.
+     */
     public Page<Comment> getCommentsByPost(int pageNumber, int pageSize, long postId) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(
                 Sort.Order.desc("createdAt")
         ));
-
         return commentRepository.findByPostId(postId, pageable);
     }
 
@@ -57,10 +63,16 @@ public class CommentService {
         commentRepository.deleteById(id);
     }
 
-    public void deleteCommentsOlderThen(int years, int moths, int days) {
+    /**
+     * Deletes all comments that are at least {@code years}, {@code months}, {@code days} old
+     * @param years number of years
+     * @param months number of months
+     * @param days number of days
+     */
+    public void deleteCommentsOlderThen(int years, int months, int days) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.YEAR, -years);
-        calendar.add(Calendar.MONTH, -moths);
+        calendar.add(Calendar.MONTH, -months);
         calendar.add(Calendar.DATE, -days);
 
         commentRepository.deleteAllByCreatedAtBefore(new Timestamp(calendar.getTimeInMillis()));

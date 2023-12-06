@@ -2,12 +2,11 @@ package edu.example.web.controller;
 
 import edu.example.dto.auth.AuthUserDto;
 import edu.example.dto.auth.LoginRequestDto;
-import edu.example.dto.auth.PasswordRequestDto;
 import edu.example.dto.auth.RegisterRequestDto;
 import edu.example.exception.UnprocessableEntityException;
 import edu.example.service.AuthService;
 import edu.example.web.security.SecurityConstants;
-import edu.example.web.security.UserInfoDetails;
+import edu.example.web.security.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -37,7 +36,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
             @ApiResponse(responseCode = "403", description = "Unauthorized"),
     })
-    public ResponseEntity<AuthUserDto> user(@AuthenticationPrincipal UserInfoDetails userDetails) {
+    public ResponseEntity<AuthUserDto> user(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         AuthUserDto user = new AuthUserDto();
         user.setUsername(userDetails.getUsername());
         user.setRoles(userDetails.getRoles().stream()
@@ -72,15 +71,6 @@ public class AuthController {
         AuthUserDto authUser = authService.login(requestDto);
         addTokenCookieToResponse(response, authUser.getToken());
         return ResponseEntity.ok(authUser);
-    }
-
-    @PostMapping("/validate")
-    @Operation(summary = "Check if password's complexity meets the requirements")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Password is valid"),
-            @ApiResponse(responseCode = "400", description = "Password is invalid / parsing error")
-    })
-    public void validate(@RequestBody @Valid PasswordRequestDto requestDto) {
     }
 
     private void addTokenCookieToResponse(HttpServletResponse response, String token) {

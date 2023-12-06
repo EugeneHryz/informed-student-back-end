@@ -1,34 +1,30 @@
 package edu.example.service;
 
+import edu.example.dto.userInfo.UserInfoCreateUpdateDto;
 import edu.example.exception.EntityNotFoundException;
+import edu.example.mapper.UserInfoMapper;
+import edu.example.model.User;
 import edu.example.model.UserInfo;
 import edu.example.repository.UserInfoRepository;
 import edu.example.repository.UserRepository;
 import edu.example.repository.exception.FileWriteException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@RequiredArgsConstructor
 public class UserInfoService {
 
     private final UserInfoRepository userInfoRepository;
     private final UserRepository userRepository;
 
     private final FileStorageService fileStorageService;
+    private final UserInfoMapper userInfoMapper;
 
-
-    @Autowired
-    public UserInfoService(UserInfoRepository userInfoRepository, UserRepository userRepository,
-                           FileStorageService fileStorageService) {
-        this.userInfoRepository = userInfoRepository;
-        this.userRepository = userRepository;
-        this.fileStorageService = fileStorageService;
-    }
-
-    public UserInfo createOrUpdateUserInfo(UserInfo userInfo) {
-        if (!userRepository.existsByUsername(userInfo.getUsername()))
-            throw new EntityNotFoundException("User not found");
+    public UserInfo createOrUpdateUserInfo(UserInfoCreateUpdateDto userInfoDto, User user) {
+        UserInfo userInfo = userInfoMapper.toUserInfo(userInfoDto);
+        userInfo.setUsername(user.getUsername());
 
         return userInfoRepository.save(userInfo);
     }
@@ -41,13 +37,14 @@ public class UserInfoService {
         return optional.get();
     }
 
-    public String getUserImageName(String username) {
-        return userInfoRepository.findById(username)
-                .orElseThrow(() -> new EntityNotFoundException("User info not found"))
-                .getUserImage();
-    }
-
-    public String setUserImage(String username, MultipartFile file) {
+    /**
+     * Saves user profile image in object storage. Generated file name is saved into UserInfo object for that user.
+     * If UserInfo object does not exist it will be created.
+     * @param username username of a user
+     * @param file file to save
+     * @return generated file name
+     */
+    public String setUserProfileImage(String username, MultipartFile file) {
         if (!userRepository.existsByUsername(username))
             throw new EntityNotFoundException("User not found");
 
@@ -70,5 +67,4 @@ public class UserInfoService {
             throw new RuntimeException(e);
         }
     }
-
 }
