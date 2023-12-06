@@ -2,7 +2,6 @@ package edu.example.service;
 
 import edu.example.exception.EntityNotFoundException;
 import edu.example.model.User;
-import edu.example.repository.UserInfoRepository;
 import edu.example.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +20,6 @@ import static java.util.Objects.nonNull;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final UserInfoRepository userInfoRepository;
     private final TokenService tokenService;
     private final CommentService commentService;
 
@@ -63,14 +61,6 @@ public class UserService {
         user.setBanned(isBanned);
         user = userRepository.save(user);
         return user;
-    }
-
-    public void deleteUser(Long id) {
-        var user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
-        try {
-            userInfoRepository.deleteById(user.getUsername());
-        } catch (EntityNotFoundException ignored) {}
-        userRepository.deleteById(id);
     }
 
     public User getUserByCommentId(Long commentId) {

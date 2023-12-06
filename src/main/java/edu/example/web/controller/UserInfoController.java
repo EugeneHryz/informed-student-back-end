@@ -4,7 +4,7 @@ import edu.example.dto.userInfo.UserInfoCreateUpdateDto;
 import edu.example.dto.userInfo.UserInfoResponseDto;
 import edu.example.mapper.UserInfoMapper;
 import edu.example.service.UserInfoService;
-import edu.example.web.security.UserInfoDetails;
+import edu.example.web.security.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -39,7 +39,7 @@ public class UserInfoController {
             @ApiResponse(responseCode = "400", description = "Parsing / validation error")
     })
     public UserInfoResponseDto createOrUpdateUserInfo(@RequestBody @Valid UserInfoCreateUpdateDto userInfo,
-                                                      @AuthenticationPrincipal UserInfoDetails userDetails) {
+                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userInfoMapper.toUserInfoResponseDto(
                 userInfoService.createOrUpdateUserInfo(userInfo, userDetails.getUser()));
     }
@@ -68,16 +68,4 @@ public class UserInfoController {
                              @RequestPart("image") MultipartFile image) {
         userInfoService.setUserImage(username, image);
     }
-
-    @GetMapping("/getImage")
-    @Operation(summary = "Get user's image")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
-            @ApiResponse(responseCode = "404", description = "User not found")
-    })
-    public String getUserImage(String username) {
-        return userInfoService.getUserImageName(username);
-    }
-
 }

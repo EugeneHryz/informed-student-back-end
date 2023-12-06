@@ -3,7 +3,7 @@ package edu.example.web.security.method;
 import edu.example.exception.EntityNotFoundException;
 import edu.example.model.Post;
 import edu.example.repository.PostRepository;
-import edu.example.web.security.UserInfoDetails;
+import edu.example.web.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,7 @@ public class PostSecurity {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new EntityNotFoundException("Unable to find post by id"));
 
-        UserInfoDetails userDetails = (UserInfoDetails) auth.getPrincipal();
+        UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
         return Objects.equals(post.getUser().getId(), userDetails.getUser().getId());
     }
 }
