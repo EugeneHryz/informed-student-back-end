@@ -5,11 +5,12 @@ import edu.example.model.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.history.RevisionRepository;
 
 import java.sql.Timestamp;
 import java.util.List;
 
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface CommentRepository extends JpaRepository<Comment, Long>, RevisionRepository<Comment, Long, Long> {
 
     List<Comment> findCommentsByPostOrderByCreatedAt(Post post);
 
