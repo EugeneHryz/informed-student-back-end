@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2023-12-09-separate-schema-for-quartz" author="eugene">
+
+        <sql>
+            create schema if not exists scheduler;
+        </sql>
+
+        <sql>
+            alter table public.qrtz_job_details set schema scheduler;
+            alter table public.qrtz_locks set schema scheduler;
+            alter table public.qrtz_scheduler_state set schema scheduler;
+            alter table public.qrtz_triggers set schema scheduler;
+            alter table public.qrtz_simple_triggers set schema scheduler;
+            alter table public.qrtz_paused_trigger_grps set schema scheduler;
+            alter table public.qrtz_fired_triggers set schema scheduler;
+            alter table public.qrtz_cron_triggers set schema scheduler;
+            alter table public.qrtz_blob_triggers set schema scheduler;
+            alter table public.qrtz_simprop_triggers set schema scheduler;
+        </sql>
+
+    </changeSet>
+
+</databaseChangeLog>
