@@ -1,7 +1,9 @@
 package edu.example.web.controller;
 
+import com.github.dockerjava.api.model.Reachability;
 import edu.example.dto.PageResponse;
 import edu.example.dto.comment.CommentResponseDto;
+import edu.example.dto.comment.CommentRevisionResponseDto;
 import edu.example.dto.comment.CreateCommentReplyRequestDto;
 import edu.example.dto.comment.CreateCommentRequestDto;
 import edu.example.mapper.CommentMapper;
@@ -17,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -92,6 +96,34 @@ public class CommentController {
         Comment comment = commentService.getComment(id);
         Integer numberOfReplies = commentService.countNumberOfReplies(comment.getId());
         return commentMapper.toCommentResponseDto(comment, numberOfReplies);
+    }
+
+    @PreAuthorize("@commentSecurity.isAllowedToModifyComment(authentication, #id)")
+    @PutMapping
+    @Operation(description = "Update comment")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "404", description = "Comment not found")
+    })
+    public CommentResponseDto update(@RequestParam Long id,
+                                     @RequestParam String text) {
+        var updatedComment = commentService.updateComment(id, text);
+        return commentMapper.toCommentResponseDto(updatedComment);
+    }
+
+    @PreAuthorize("hasAuthority('MODERATOR')")
+    @GetMapping("/revision")
+    @Operation(description = "Get comment's revisions")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "404", description = "Comment not found")
+    })
+    public List<CommentRevisionResponseDto> getCommentHistory(@RequestParam Long id) {
+        var revisions = commentService.getCommentHistory(id);
+        var revisionsList = revisions.stream().toList();
+        return commentMapper.toCommentRevisionResponseDto(revisionsList);
     }
 
     @GetMapping("/filterByPost")

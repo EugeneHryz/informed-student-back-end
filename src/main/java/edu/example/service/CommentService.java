@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.history.Revisions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,8 +57,7 @@ public class CommentService {
         comment.setUser(author);
         comment.setText(createRequestDto.getText());
         comment.setAnonymous(createRequestDto.isAnonymous());
-        commentRepository.save(comment);
-        return comment;
+        return commentRepository.save(comment);
     }
 
     public Comment updateComment(Long id, String text) {
@@ -129,6 +129,10 @@ public class CommentService {
         calendar.add(Calendar.DATE, -days);
 
         commentRepository.deleteAllByCreatedAtBefore(new Timestamp(calendar.getTimeInMillis()));
+    }
+
+    public Revisions<Long, Comment> getCommentHistory(Long id) {
+        return commentRepository.findRevisions(id);
     }
 
 }

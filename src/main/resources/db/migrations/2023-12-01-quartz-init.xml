@@ -6,173 +6,263 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="2023-12-01-quartz-init" author="ivanuil">
-        <sql>
-            create table public.qrtz_job_details (
-                                                     sched_name character varying(120) not null,
-                                                     job_name character varying(200) not null,
-                                                     job_group character varying(200) not null,
-                                                     description character varying(250),
-                                                     job_class_name character varying(250) not null,
-                                                     is_durable boolean not null,
-                                                     is_nonconcurrent boolean not null,
-                                                     is_update_data boolean not null,
-                                                     requests_recovery boolean not null,
-                                                     job_data bytea,
-                                                     primary key (sched_name, job_name, job_group)
-            );
-            create index idx_qrtz_j_req_recovery on qrtz_job_details using btree (sched_name, requests_recovery);
-            create index idx_qrtz_j_grp on qrtz_job_details using btree (sched_name, job_group);
-        </sql>
 
-        <sql>
-            create table public.qrtz_locks (
-                                               sched_name character varying(120) not null,
-                                               lock_name character varying(40) not null,
-                                               primary key (sched_name, lock_name)
-            );
-        </sql>
+        <createTable tableName="qrtz_job_details">
+            <column name="sched_name" type="VARCHAR(120)">
+                    <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="job_name" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="job_group" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="description" type="VARCHAR(250)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="job_class_name" type="VARCHAR(250)">
+                >
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_durable" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_nonconcurrent" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_update_data" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="requests_recovery" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="job_data" type="bytea"/>
+        </createTable>
+        
+        <createIndex tableName="qrtz_job_details" indexName="idx_qrtz_j_req_recovery">
+            <column name="sched_name"/>
+            <column name="requests_recovery"/>
+        </createIndex>
 
-        <sql>
-            create table public.qrtz_scheduler_state (
-                                                         sched_name character varying(120) not null,
-                                                         instance_name character varying(200) not null,
-                                                         last_checkin_time bigint not null,
-                                                         checkin_interval bigint not null,
-                                                         primary key (sched_name, instance_name)
-            );
-        </sql>
+        <createIndex tableName="qrtz_job_details" indexName="idx_qrtz_j_grp">
+            <column name="sched_name"/>
+            <column name="job_group"/>
+        </createIndex>
+
+        <createTable tableName="qrtz_locks">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="lock_name" type="VARCHAR(40)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="qrtz_scheduler_state">
+            <column name="sched_name" type="VARCHAR(120)">
+                    <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="instance_name" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="last_checkin_time" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="checkin_interval" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="qrtz_triggers">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="trigger_name" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="trigger_group" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="job_name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="job_group" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(250)"/>
+            <column name="next_fire_time" type="BIGINT"/>
+            <column name="prev_fire_time" type="BIGINT"/>
+            <column name="priority" type="INTEGER"/>
+            <column name="trigger_state" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trigger_type" type="VARCHAR(8)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_time" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_time" type="BIGINT"/>
+            <column name="calendar_name" type="VARCHAR(200)"/>
+            <column name="misfire_instr" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="job_data" type="bytea"/>
+        </createTable>
+
+        <createIndex tableName="qrtz_triggers" indexName="idx_qrtz_t_j">
+            <column name="sched_name"/>
+            <column name="job_name"/>
+            <column name="job_group"/>
+        </createIndex>
+
+        <createIndex tableName="qrtz_triggers" indexName="idx_qrtz_t_jg">
+            <column name="sched_name"/>
+            <column name="job_group"/>
+        </createIndex>
+
+        <createIndex tableName="qrtz_triggers" indexName="idx_qrtz_t_c">
+            <column name="sched_name"/>
+            <column name="calendar_name"/>
+        </createIndex>
+
+        <createIndex tableName="qrtz_triggers" indexName="idx_qrtz_t_g">
+            <column name="sched_name"/>
+            <column name="trigger_group"/>
+        </createIndex>
+
+        <createIndex tableName="qrtz_triggers" indexName="idx_qrtz_t_state">
+            <column name="sched_name"/>
+            <column name="trigger_state"/>
+        </createIndex>
 
 
-        <sql>
-            create table public.qrtz_triggers (
-                                                  sched_name character varying(120) not null,
-                                                  trigger_name character varying(200) not null,
-                                                  trigger_group character varying(200) not null,
-                                                  job_name character varying(200) not null,
-                                                  job_group character varying(200) not null,
-                                                  description character varying(250),
-                                                  next_fire_time bigint,
-                                                  prev_fire_time bigint,
-                                                  priority integer,
-                                                  trigger_state character varying(16) not null,
-                                                  trigger_type character varying(8) not null,
-                                                  start_time bigint not null,
-                                                  end_time bigint,
-                                                  calendar_name character varying(200),
-                                                  misfire_instr smallint,
-                                                  job_data bytea,
-                                                  primary key (sched_name, trigger_name, trigger_group),
-                                                  foreign key (sched_name, job_name, job_group) references public.qrtz_job_details (sched_name, job_name, job_group)
-                                                      match simple on update no action on delete no action
-            );
-            create index idx_qrtz_t_j on qrtz_triggers using btree (sched_name, job_name, job_group);
-            create index idx_qrtz_t_jg on qrtz_triggers using btree (sched_name, job_group);
-            create index idx_qrtz_t_c on qrtz_triggers using btree (sched_name, calendar_name);
-            create index idx_qrtz_t_g on qrtz_triggers using btree (sched_name, trigger_group);
-            create index idx_qrtz_t_state on qrtz_triggers using btree (sched_name, trigger_state);
-            create index idx_qrtz_t_n_state on qrtz_triggers using btree (sched_name, trigger_name, trigger_group, trigger_state);
-            create index idx_qrtz_t_n_g_state on qrtz_triggers using btree (sched_name, trigger_group, trigger_state);
-            create index idx_qrtz_t_next_fire_time on qrtz_triggers using btree (sched_name, next_fire_time);
-            create index idx_qrtz_t_nft_st on qrtz_triggers using btree (sched_name, trigger_state, next_fire_time);
-            create index idx_qrtz_t_nft_misfire on qrtz_triggers using btree (sched_name, misfire_instr, next_fire_time);
-            create index idx_qrtz_t_nft_st_misfire on qrtz_triggers using btree (sched_name, misfire_instr, next_fire_time, trigger_state);
-            create index idx_qrtz_t_nft_st_misfire_grp on qrtz_triggers using btree (sched_name, misfire_instr, next_fire_time, trigger_group, trigger_state);
-        </sql>
+        <createTable tableName="qrtz_simple_triggers">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="trigger_name" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="trigger_group" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="repeat_count" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="repeat_interval" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="times_triggered" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="qrtz_paused_trigger_grps">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="trigger_group" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="qrtz_fired_triggers">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="entry_id" type="VARCHAR(95)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="trigger_name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trigger_group" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="instance_name" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fired_time" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sched_time" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="priority" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="state" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="job_name" type="VARCHAR(200)"/>
+            <column name="job_group" type="VARCHAR(200)"/>
+            <column name="is_nonconcurrent" type="BOOLEAN"/>
+            <column name="requests_recovery" type="BOOLEAN"/>
+        </createTable>
+
+        <createIndex tableName="qrtz_fired_triggers" indexName="idx_qrtz_ft_trig_inst_name">
+            <column name="sched_name"/>
+            <column name="instance_name"/>
+        </createIndex>
 
 
-        <sql>
-            create table public.qrtz_simple_triggers (
-                                                         sched_name character varying(120) not null,
-                                                         trigger_name character varying(200) not null,
-                                                         trigger_group character varying(200) not null,
-                                                         repeat_count bigint not null,
-                                                         repeat_interval bigint not null,
-                                                         times_triggered bigint not null,
-                                                         primary key (sched_name, trigger_name, trigger_group),
-                                                         foreign key (sched_name, trigger_name, trigger_group) references public.qrtz_triggers (sched_name, trigger_name, trigger_group)
-                                                             match simple on update no action on delete no action
-            );
-        </sql>
+        <createTable tableName="qrtz_cron_triggers">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="trigger_name" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="trigger_group" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="cron_expression" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="time_zone_id" type="VARCHAR(80)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
 
-        <sql>
-            create table public.qrtz_paused_trigger_grps (
-                                                             sched_name character varying(120) not null,
-                                                             trigger_group character varying(200) not null,
-                                                             primary key (sched_name, trigger_group)
-            );
-        </sql>
 
-        <sql>
-            create table public.qrtz_fired_triggers (
-                                                        sched_name character varying(120) not null,
-                                                        entry_id character varying(95) not null,
-                                                        trigger_name character varying(200) not null,
-                                                        trigger_group character varying(200) not null,
-                                                        instance_name character varying(200) not null,
-                                                        fired_time bigint not null,
-                                                        sched_time bigint not null,
-                                                        priority integer not null,
-                                                        state character varying(16) not null,
-                                                        job_name character varying(200),
-                                                        job_group character varying(200),
-                                                        is_nonconcurrent boolean,
-                                                        requests_recovery boolean,
-                                                        primary key (sched_name, entry_id)
-            );
-            create index idx_qrtz_ft_trig_inst_name on qrtz_fired_triggers using btree (sched_name, instance_name);
-            create index idx_qrtz_ft_inst_job_req_rcvry on qrtz_fired_triggers using btree (sched_name, instance_name, requests_recovery);
-            create index idx_qrtz_ft_j_g on qrtz_fired_triggers using btree (sched_name, job_name, job_group);
-            create index idx_qrtz_ft_jg on qrtz_fired_triggers using btree (sched_name, job_group);
-            create index idx_qrtz_ft_t_g on qrtz_fired_triggers using btree (sched_name, trigger_name, trigger_group);
-            create index idx_qrtz_ft_tg on qrtz_fired_triggers using btree (sched_name, trigger_group);
-        </sql>
+        <createTable tableName="qrtz_blob_triggers">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="trigger_name" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="trigger_group" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="blob_data" type="bytea">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
 
-        <sql>
-            create table public.qrtz_cron_triggers (
-                                                       sched_name character varying(120) not null,
-                                                       trigger_name character varying(200) not null,
-                                                       trigger_group character varying(200) not null,
-                                                       cron_expression character varying(120) not null,
-                                                       time_zone_id character varying(80),
-                                                       primary key (sched_name, trigger_name, trigger_group),
-                                                       foreign key (sched_name, trigger_name, trigger_group) references public.qrtz_triggers (sched_name, trigger_name, trigger_group)
-                                                           match simple on update no action on delete no action
-            );
-        </sql>
-
-        <sql>
-            create table public.qrtz_blob_triggers (
-                                                       sched_name character varying(120) not null,
-                                                       trigger_name character varying(200) not null,
-                                                       trigger_group character varying(200) not null,
-                                                       blob_data bytea,
-                                                       primary key (sched_name, trigger_name, trigger_group),
-                                                       foreign key (sched_name, trigger_name, trigger_group) references public.qrtz_triggers (sched_name, trigger_name, trigger_group)
-                                                           match simple on update no action on delete no action
-            );
-        </sql>
-
-        <sql>
-            create table public.qrtz_simprop_triggers (
-                                                          sched_name character varying(120) not null,
-                                                          trigger_name character varying(200) not null,
-                                                          trigger_group character varying(200) not null,
-                                                          str_prop_1 character varying(512),
-                                                          str_prop_2 character varying(512),
-                                                          str_prop_3 character varying(512),
-                                                          int_prop_1 integer,
-                                                          int_prop_2 integer,
-                                                          long_prop_1 bigint,
-                                                          long_prop_2 bigint,
-                                                          dec_prop_1 numeric(13,4),
-                                                          dec_prop_2 numeric(13,4),
-                                                          bool_prop_1 boolean,
-                                                          bool_prop_2 boolean,
-                                                          primary key (sched_name, trigger_name, trigger_group),
-                                                          foreign key (sched_name, trigger_name, trigger_group) references public.qrtz_triggers (sched_name, trigger_name, trigger_group)
-                                                              match simple on update no action on delete no action
-            );
-        </sql>
+        <createTable tableName="qrtz_simprop_triggers">
+            <column name="sched_name" type="VARCHAR(120)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="trigger_name" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="trigger_group" type="VARCHAR(200)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="str_prop_1" type="VARCHAR(512)"/>
+            <column name="str_prop_2" type="VARCHAR(512)"/>
+            <column name="str_prop_3" type="VARCHAR(512)"/>
+            <column name="int_prop_1" type="INTEGER"/>
+            <column name="int_prop_2" type="INTEGER"/>
+            <column name="long_prop_1" type="BIGINT"/>
+            <column name="long_prop_2" type="BIGINT"/>
+            <column name="dec_prop_1" type="NUMERIC(13,4)"/>
+            <column name="dec_prop_2" type="NUMERIC(13,4)"/>
+            <column name="bool_prop_1" type="BOOLEAN"/>
+            <column name="bool_prop_2" type="BOOLEAN"/>
+        </createTable>
 
     </changeSet>
 

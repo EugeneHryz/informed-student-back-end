@@ -2,6 +2,7 @@ package edu.example.web.controller;
 
 import edu.example.dto.PageResponse;
 import edu.example.dto.admin.UpdateUserBanRequestDto;
+import edu.example.dto.user.UserRequestDto;
 import edu.example.dto.user.UserResponseDto;
 import edu.example.mapper.UserMapper;
 import edu.example.service.AdminService;
@@ -17,7 +18,6 @@ import org.quartz.SchedulerException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @PreAuthorize("hasAuthority('ADMIN')")
@@ -51,29 +51,15 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    @Operation(description = "Get users by ban status")
+    @Operation(description = "Get users")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
             @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
     })
-    public PageResponse<UserResponseDto> getUsers(@RequestParam(required = false) Boolean isBanned,
-                                                  @RequestParam(defaultValue = "0") int page,
-                                                  @RequestParam(defaultValue = "5") int size) {
-        var result = userService.getUsers(isBanned, page, size);
-        return PageResponse.of(result, userMapper::toUserResponseDto);
-    }
+    public PageResponse<UserResponseDto> getUsers(@RequestBody UserRequestDto filter) {
+        var result = userService.getUsers(filter.toPredicate(), filter.getPageNumber(), filter.getPageSize());
 
-    @GetMapping("/users/search")
-    @Operation(description = "Search users by their email or username")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
-    })
-    public List<UserResponseDto> getUsersByUsernameOrEmail(@RequestParam String search) {
-        var result = userService.getUsersByUsernameOrEmail(search);
-        return result.stream()
-                .map(userMapper::toUserResponseDto)
-                .toList();
+        return PageResponse.of(result, userMapper::toUserResponseDto);
     }
 
     @PostMapping("/users/ban")
