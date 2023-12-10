@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2023-12-09-add-news-posts" author="eugene">
+
+        <createTable tableName="comment_reply">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="comment_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="reply_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="comment_reply"
+                                 baseColumnNames="comment_id"
+                                 constraintName="fk_comment_reply_comment_id"
+                                 referencedTableName="comment"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="comment_reply"
+                                 baseColumnNames="reply_id"
+                                 constraintName="fk_comment_reply_reply_id"
+                                 referencedTableName="comment"
+                                 referencedColumnNames="id"/>
+
+        <createIndex tableName="comment_reply" indexName="idx_comment_reply_comment_id">
+            <column name="comment_id"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>

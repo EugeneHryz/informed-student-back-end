@@ -6,6 +6,7 @@ import edu.example.dto.post.PostResponseDto;
 import edu.example.mapper.PostMapper;
 import edu.example.model.Post;
 import edu.example.service.PostService;
+import edu.example.util.PageResponseBuilder;
 import edu.example.web.security.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,23 +32,38 @@ public class PostController {
     private final PostService postService;
     private final PostMapper postMapper;
 
-    @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
-    @Operation(description = "Create post")
+    @PostMapping(value = "/study", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @Operation(description = "Create study materials post")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created successfully"),
             @ApiResponse(responseCode = "404", description = "Folder not found"),
             @ApiResponse(responseCode = "400", description = "Parsing / validation error")
     })
-    public PostResponseDto create(@RequestPart("post") @Valid CreatePostRequestDto createPostRequestDto,
-                                  @RequestPart(value = "files", required = false) List<MultipartFile> files,
-                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
-        Post post = postService.createPostWithFiles(
+    public PostResponseDto createStudyMaterialsPost(@RequestPart("post") @Valid CreatePostRequestDto createPostRequestDto,
+                                                    @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Post post = postService.createStudyMaterialsPost(
                 createPostRequestDto.getFolderId(),
                 userDetails.getUser(),
                 createPostRequestDto.getText(),
                 files);
+        return postMapper.toPostResponseDto(post);
+    }
 
+    @PreAuthorize("hasAuthority('MODERATOR')")
+    @PostMapping(value = "/news", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @Operation(description = "Create news post")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Created successfully"),
+            @ApiResponse(responseCode = "400", description = "Parsing / validation error")
+    })
+    public PostResponseDto createNewsPost(@RequestPart("post") @Valid CreatePostRequestDto createPostRequestDto,
+                                          @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Post post = postService.createNewsPost(
+                userDetails.getUser(),
+                createPostRequestDto.getText(),
+                files);
         return postMapper.toPostResponseDto(post);
     }
 
@@ -73,24 +89,27 @@ public class PostController {
         return postMapper.toPostResponseDto(postService.getPost(id));
     }
 
-    @GetMapping("/filterByFolder")
+    @GetMapping("/study/filterByFolder")
     @Operation(description = "Receive posts by folder")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Folder not found")
     })
-    public PageResponse<PostResponseDto> findPostsByFolder(@RequestParam Long folderId,
-                                                           @RequestParam(defaultValue = "0") int page,
-                                                           @RequestParam(defaultValue = "5") int size) {
+    public PageResponse<PostResponseDto> findStudyMaterialsPosts(@RequestParam Long folderId,
+                                                                 @RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "5") int size) {
         var result = postService.getPostsByFolder(page, size, folderId);
+        return PageResponseBuilder.of(result, postMapper::toPostResponseDto);
+    }
 
-        var response = new PageResponse<PostResponseDto>();
-        response.setPageSize(result.getSize());
-        response.setPageNumber(result.getNumber());
-        response.setTotalPages(result.getTotalPages());
-        response.setTotalSize(result.getTotalElements());
-        response.setContent(result.getContent().stream().map(postMapper::toPostResponseDto).toList());
-
-        return response;
+    @GetMapping("/news")
+    @Operation(description = "Receive news posts")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
+    })
+    public PageResponse<PostResponseDto> findNewsPosts(@RequestParam(defaultValue = "0") int page,
+                                                       @RequestParam(defaultValue = "5") int size) {
+        var result = postService.getNewsPosts(page, size);
+        return PageResponseBuilder.of(result, postMapper::toPostResponseDto);
     }
 }
