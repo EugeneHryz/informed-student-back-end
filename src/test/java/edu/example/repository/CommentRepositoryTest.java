@@ -45,7 +45,7 @@ public class CommentRepositoryTest extends TestContext {
                 Timestamp.valueOf("1970-01-01 00:00:00"), "Post text", user, null, null));
 
         // when
-        var newComment = commentRepository.save(new Comment(0L, post,
+        var newComment = commentRepository.save(new Comment(0L, post, Timestamp.valueOf("1970-01-01 00:00:00"),
                 Timestamp.valueOf("1970-01-01 00:00:00"), "Comment text", user, false));
 
         // then
@@ -63,15 +63,13 @@ public class CommentRepositoryTest extends TestContext {
 
         var post1 = postRepository.save(new Post(0L, folder,
                 Timestamp.valueOf("1970-01-01 00:00:00"), "Post1 text", user, null, null));
-        var comment1Post1 = commentRepository.save(new Comment(0L, post1,
+        var comment1Post1 = commentRepository.save(new Comment(0L, post1, Timestamp.valueOf("1970-01-01 00:00:00"),
                 Timestamp.valueOf("1970-01-01 00:00:00"), "Comment1 text", user, false));
-        var comment2Post1 = commentRepository.save(new Comment(0L, post1,
+        var comment2Post1 = commentRepository.save(new Comment(0L, post1, Timestamp.valueOf("1970-01-01 00:00:00"),
                 Timestamp.valueOf("1970-01-01 00:00:00"), "Comment2 text", user, false));
 
         var post2 = postRepository.save(new Post(0L, folder,
                 Timestamp.valueOf("1970-01-01 00:00:00"), "Post2 text", user, null, null));
-        var comment1Post2 = commentRepository.save(new Comment(0L, post2,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Comment3 text", user, false));
 
         // when
         var result = commentRepository.findCommentsByPostOrderByCreatedAt(post1);

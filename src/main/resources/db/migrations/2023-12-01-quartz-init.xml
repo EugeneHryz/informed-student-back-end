@@ -7,9 +7,13 @@
 
     <changeSet id="2023-12-01-quartz-init" author="ivanuil">
 
-        <createTable tableName="qrtz_job_details">
+        <sql>
+            create schema if not exists scheduler;
+        </sql>
+
+        <createTable tableName="qrtz_job_details" schemaName="scheduler">
             <column name="sched_name" type="VARCHAR(120)">
-                    <constraints nullable="false" primaryKey="true"/>
+                <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="job_name" type="VARCHAR(200)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -21,7 +25,6 @@
                 <constraints nullable="false"/>
             </column>
             <column name="job_class_name" type="VARCHAR(250)">
-                >
                 <constraints nullable="false"/>
             </column>
             <column name="is_durable" type="BOOLEAN">
@@ -38,18 +41,18 @@
             </column>
             <column name="job_data" type="bytea"/>
         </createTable>
-        
-        <createIndex tableName="qrtz_job_details" indexName="idx_qrtz_j_req_recovery">
+
+        <createIndex tableName="qrtz_job_details" indexName="idx_qrtz_j_req_recovery" schemaName="scheduler">
             <column name="sched_name"/>
             <column name="requests_recovery"/>
         </createIndex>
 
-        <createIndex tableName="qrtz_job_details" indexName="idx_qrtz_j_grp">
+        <createIndex tableName="qrtz_job_details" indexName="idx_qrtz_j_grp" schemaName="scheduler">
             <column name="sched_name"/>
             <column name="job_group"/>
         </createIndex>
 
-        <createTable tableName="qrtz_locks">
+        <createTable tableName="qrtz_locks" schemaName="scheduler">
             <column name="sched_name" type="VARCHAR(120)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
@@ -58,9 +61,9 @@
             </column>
         </createTable>
 
-        <createTable tableName="qrtz_scheduler_state">
+        <createTable tableName="qrtz_scheduler_state" schemaName="scheduler">
             <column name="sched_name" type="VARCHAR(120)">
-                    <constraints nullable="false" primaryKey="true"/>
+                <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="instance_name" type="VARCHAR(200)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -73,7 +76,7 @@
             </column>
         </createTable>
 
-        <createTable tableName="qrtz_triggers">
+        <createTable tableName="qrtz_triggers" schemaName="scheduler">
             <column name="sched_name" type="VARCHAR(120)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
@@ -110,34 +113,34 @@
             <column name="job_data" type="bytea"/>
         </createTable>
 
-        <createIndex tableName="qrtz_triggers" indexName="idx_qrtz_t_j">
+        <createIndex tableName="qrtz_triggers" indexName="idx_qrtz_t_j" schemaName="scheduler">
             <column name="sched_name"/>
             <column name="job_name"/>
             <column name="job_group"/>
         </createIndex>
 
-        <createIndex tableName="qrtz_triggers" indexName="idx_qrtz_t_jg">
+        <createIndex tableName="qrtz_triggers" indexName="idx_qrtz_t_jg" schemaName="scheduler">
             <column name="sched_name"/>
             <column name="job_group"/>
         </createIndex>
 
-        <createIndex tableName="qrtz_triggers" indexName="idx_qrtz_t_c">
+        <createIndex tableName="qrtz_triggers" indexName="idx_qrtz_t_c" schemaName="scheduler">
             <column name="sched_name"/>
             <column name="calendar_name"/>
         </createIndex>
 
-        <createIndex tableName="qrtz_triggers" indexName="idx_qrtz_t_g">
+        <createIndex tableName="qrtz_triggers" indexName="idx_qrtz_t_g" schemaName="scheduler">
             <column name="sched_name"/>
             <column name="trigger_group"/>
         </createIndex>
 
-        <createIndex tableName="qrtz_triggers" indexName="idx_qrtz_t_state">
+        <createIndex tableName="qrtz_triggers" indexName="idx_qrtz_t_state" schemaName="scheduler">
             <column name="sched_name"/>
             <column name="trigger_state"/>
         </createIndex>
 
 
-        <createTable tableName="qrtz_simple_triggers">
+        <createTable tableName="qrtz_simple_triggers" schemaName="scheduler">
             <column name="sched_name" type="VARCHAR(120)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
@@ -158,7 +161,7 @@
             </column>
         </createTable>
 
-        <createTable tableName="qrtz_paused_trigger_grps">
+        <createTable tableName="qrtz_paused_trigger_grps" schemaName="scheduler">
             <column name="sched_name" type="VARCHAR(120)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
@@ -167,7 +170,7 @@
             </column>
         </createTable>
 
-        <createTable tableName="qrtz_fired_triggers">
+        <createTable tableName="qrtz_fired_triggers" schemaName="scheduler">
             <column name="sched_name" type="VARCHAR(120)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
@@ -201,13 +204,13 @@
             <column name="requests_recovery" type="BOOLEAN"/>
         </createTable>
 
-        <createIndex tableName="qrtz_fired_triggers" indexName="idx_qrtz_ft_trig_inst_name">
+        <createIndex tableName="qrtz_fired_triggers" indexName="idx_qrtz_ft_trig_inst_name" schemaName="scheduler">
             <column name="sched_name"/>
             <column name="instance_name"/>
         </createIndex>
 
 
-        <createTable tableName="qrtz_cron_triggers">
+        <createTable tableName="qrtz_cron_triggers" schemaName="scheduler">
             <column name="sched_name" type="VARCHAR(120)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
@@ -226,7 +229,7 @@
         </createTable>
 
 
-        <createTable tableName="qrtz_blob_triggers">
+        <createTable tableName="qrtz_blob_triggers" schemaName="scheduler">
             <column name="sched_name" type="VARCHAR(120)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
@@ -241,7 +244,7 @@
             </column>
         </createTable>
 
-        <createTable tableName="qrtz_simprop_triggers">
+        <createTable tableName="qrtz_simprop_triggers" schemaName="scheduler">
             <column name="sched_name" type="VARCHAR(120)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>

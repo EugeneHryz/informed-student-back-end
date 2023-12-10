@@ -18,6 +18,9 @@ public interface CommentMapper {
     CommentMapper INSTANCE = Mappers.getMapper(CommentMapper.class);
 
     @Mapping(source = "comment", target = "user", qualifiedByName = "commentToUserDto")
+    CommentResponseDto toCommentResponseDto(Comment comment, Integer numberOfReplies);
+
+    @Mapping(source = "comment", target = "user", qualifiedByName = "commentToUserDto")
     CommentResponseDto toCommentResponseDto(Comment comment);
 
     @Named("commentToUserDto")

@@ -61,14 +61,7 @@ public class AdminController {
     public PageResponse<UserResponseDto> getUsers(@RequestBody UserRequestDto filter) {
         var result = userService.getUsers(filter.toPredicate(), filter.getPageNumber(), filter.getPageSize());
 
-        var response = new PageResponse<UserResponseDto>();
-        response.setPageSize(result.getSize());
-        response.setPageNumber(result.getNumber());
-        response.setTotalPages(result.getTotalPages());
-        response.setTotalSize(result.getTotalElements());
-        response.setContent(result.getContent().stream().map(userMapper::toUserResponseDto).toList());
-
-        return response;
+        return PageResponse.of(result, userMapper::toUserResponseDto);
     }
 
     @PostMapping("/users")

@@ -18,4 +18,6 @@ public class CommentResponseDto {
     private UserDto user;
 
     private String text;
+
+    private Integer numberOfReplies;
 }

@@ -4,6 +4,7 @@ import edu.example.model.Comment;
 import edu.example.model.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.history.RevisionRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Revisio
 
     List<Comment> findCommentsByPostOrderByCreatedAt(Post post);
 
+    @EntityGraph(attributePaths = {"user"})
     Page<Comment> findByPostId(Long postId, Pageable pageable);
 
     @Transactional
