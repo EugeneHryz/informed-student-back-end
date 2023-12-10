@@ -37,6 +37,8 @@ public class CommentService {
      * @return Page object with information such as total number of posts, total number of pages, etc.
      */
     public Page<Comment> getCommentsByPost(int pageNumber, int pageSize, long postId) {
+        postRepository.findById(postId).orElseThrow(() -> new EntityNotFoundException("Post not found"));
+
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(
                 Sort.Order.desc("createdAt")
         ));
@@ -96,6 +98,8 @@ public class CommentService {
     }
 
     public Page<Comment> getCommentReplies(Long commentId, int pageNumber, int pageSize) {
+        commentRepository.findById(commentId).orElseThrow(() -> new EntityNotFoundException("Comment not found"));
+
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(
                 Sort.Order.desc("reply.createdAt")
         ));

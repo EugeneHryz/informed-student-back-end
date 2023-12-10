@@ -7,7 +7,6 @@ import edu.example.dto.comment.CreateCommentRequestDto;
 import edu.example.mapper.CommentMapper;
 import edu.example.model.Comment;
 import edu.example.service.CommentService;
-import edu.example.util.PageResponseBuilder;
 import edu.example.web.security.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -62,12 +61,13 @@ public class CommentController {
     @Operation(description = "Receive replies to a comment")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Сomment not found")
     })
     public PageResponse<CommentResponseDto> getCommentReplies(@RequestParam Long commentId,
                                                               @RequestParam(defaultValue = "0") int page,
                                                               @RequestParam(defaultValue = "5") int size) {
         var result = commentService.getCommentReplies(commentId, page, size);
-        return PageResponseBuilder.of(result, commentMapper::toCommentResponseDto);
+        return PageResponse.of(result, commentMapper::toCommentResponseDto);
     }
 
     @PreAuthorize("hasAuthority('MODERATOR') || @commentSecurity.isAllowedToModifyComment(authentication, #id)")
@@ -101,10 +101,10 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Post not found")
     })
     public PageResponse<CommentResponseDto> getCommentsByPost(@RequestParam Long postId,
-                                                               @RequestParam(defaultValue = "0") int page,
-                                                               @RequestParam(defaultValue = "5") int size) {
+                                                              @RequestParam(defaultValue = "0") int page,
+                                                              @RequestParam(defaultValue = "5") int size) {
         var result = commentService.getCommentsByPost(page, size, postId);
-        return PageResponseBuilder.of(result, c -> {
+        return PageResponse.of(result, c -> {
             Integer numberOfReplies = commentService.countNumberOfReplies(c.getId());
             return commentMapper.toCommentResponseDto(c, numberOfReplies);
         });

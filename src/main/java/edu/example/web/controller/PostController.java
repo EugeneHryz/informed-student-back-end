@@ -6,7 +6,6 @@ import edu.example.dto.post.PostResponseDto;
 import edu.example.mapper.PostMapper;
 import edu.example.model.Post;
 import edu.example.service.PostService;
-import edu.example.util.PageResponseBuilder;
 import edu.example.web.security.UserDetailsImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -99,7 +98,7 @@ public class PostController {
                                                                  @RequestParam(defaultValue = "0") int page,
                                                                  @RequestParam(defaultValue = "5") int size) {
         var result = postService.getPostsByFolder(page, size, folderId);
-        return PageResponseBuilder.of(result, postMapper::toPostResponseDto);
+        return PageResponse.of(result, postMapper::toPostResponseDto);
     }
 
     @GetMapping("/news")
@@ -110,6 +109,6 @@ public class PostController {
     public PageResponse<PostResponseDto> findNewsPosts(@RequestParam(defaultValue = "0") int page,
                                                        @RequestParam(defaultValue = "5") int size) {
         var result = postService.getNewsPosts(page, size);
-        return PageResponseBuilder.of(result, postMapper::toPostResponseDto);
+        return PageResponse.of(result, postMapper::toPostResponseDto);
     }
 }

@@ -6,7 +6,6 @@ import edu.example.dto.user.UserResponseDto;
 import edu.example.mapper.UserMapper;
 import edu.example.service.AdminService;
 import edu.example.service.UserService;
-import edu.example.util.PageResponseBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -61,7 +60,7 @@ public class AdminController {
                                                   @RequestParam(defaultValue = "0") int page,
                                                   @RequestParam(defaultValue = "5") int size) {
         var result = userService.getUsers(isBanned, page, size);
-        return PageResponseBuilder.of(result, userMapper::toUserResponseDto);
+        return PageResponse.of(result, userMapper::toUserResponseDto);
     }
 
     @GetMapping("/users/search")
