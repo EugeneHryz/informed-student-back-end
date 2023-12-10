@@ -3,6 +3,7 @@ package edu.example.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.envers.NotAudited;
 
 import java.sql.Timestamp;
 import java.util.List;

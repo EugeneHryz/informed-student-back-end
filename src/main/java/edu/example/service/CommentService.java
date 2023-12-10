@@ -11,11 +11,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.history.Revisions;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
@@ -76,6 +76,10 @@ public class CommentService {
         calendar.add(Calendar.DATE, -days);
 
         commentRepository.deleteAllByCreatedAtBefore(new Timestamp(calendar.getTimeInMillis()));
+    }
+
+    public Revisions<Long, Comment> getCommentHistory(Long id) {
+        return commentRepository.findRevisions(id);
     }
 
 }

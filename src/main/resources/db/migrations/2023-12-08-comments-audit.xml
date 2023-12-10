@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2023-12-08-comments-audit" author="ivanuil">
+
+        <addColumn tableName="comment">
+            <column name="update_time" type="TIMESTAMP"/>
+        </addColumn>
+        
+        <createTable tableName="comment_aud">
+            <column name="rev" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="id" type="BIGINT"/>
+            <column name="revtype" type="INTEGER"/>
+            <column name="post_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+            <column name="anonymous" type="BOOLEAN"/>
+            <column name="creation_time" type="TIMESTAMP"/>
+            <column name="update_time" type="TIMESTAMP"/>
+            <column name="text" type="VARCHAR"/>
+        </createTable>
+
+        <createTable tableName="revinfo">
+            <column name="rev" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="revtstmp" type="BIGINT"/>
+        </createTable>
+        
+        <createSequence sequenceName="comment_aud_seq" incrementBy="1" startValue="1"/>
+
+        <createSequence sequenceName="revinfo_seq" incrementBy="50" startValue="1"/>
+
+        <createIndex tableName="comment_aud" indexName="idx_comment_aud_id">
+            <column name="id"/>
+        </createIndex>
+
+    </changeSet>
+
+</databaseChangeLog>
