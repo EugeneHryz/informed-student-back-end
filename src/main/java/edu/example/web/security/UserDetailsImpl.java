@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Getter
 @RequiredArgsConstructor
-public class UserInfoDetails implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
 
     private final User user;
 
@@ -39,7 +39,7 @@ public class UserInfoDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !user.isBanned();
     }
 
     @Override
@@ -49,7 +49,7 @@ public class UserInfoDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return !user.isBanned();
     }
 
 }

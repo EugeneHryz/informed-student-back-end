@@ -31,4 +31,7 @@ public class User {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(name = "is_banned", nullable = false)
+    private boolean isBanned;
 }

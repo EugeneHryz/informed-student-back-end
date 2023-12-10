@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2023-12-02-user-info-create" author="ivanuil">
+
+        <createTable tableName="user_info">
+            <column name="username" type="VARCHAR">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="date_of_birth" type="DATE"/>
+            <column name="gender" type="VARCHAR"/>
+            <column name="course" type="INTEGER"/>
+            <column name="specialty" type="VARCHAR"/>
+            <column name="user_image_name" type="VARCHAR"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="user_info"
+                                 baseColumnNames="username"
+                                 constraintName="fk_user_info_username"
+                                 referencedTableName="users"
+                                 referencedColumnNames="username" />
+
+    </changeSet>
+
+</databaseChangeLog>

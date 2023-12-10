@@ -1,5 +1,6 @@
 package edu.example.service;
 
+import edu.example.exception.DuplicateEntityException;
 import edu.example.exception.EntityNotFoundException;
 import edu.example.model.Folder;
 import edu.example.model.FolderType;
@@ -31,6 +32,9 @@ public class FolderService {
     }
 
     public Folder createFolder(Long subjectId, FolderType folderType) {
+        if (folderRepository.existsBySubject_IdAndType(subjectId, folderType))
+            throw new DuplicateEntityException("Duplicate folder");
+        
         var folder = new Folder();
         folder.setSubject(subjectService.getSubject(subjectId));
         folder.setType(folderType);

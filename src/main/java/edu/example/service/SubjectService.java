@@ -1,12 +1,16 @@
 package edu.example.service;
 
+import edu.example.exception.DuplicateEntityException;
 import edu.example.exception.EntityNotFoundException;
+import edu.example.exception.UnprocessableEntityException;
 import edu.example.model.Subject;
 import edu.example.repository.SubjectRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -24,6 +28,9 @@ public class SubjectService {
     }
 
     public Subject createSubject(String name, Integer course) {
+        if (subjectRepository.existsByNameAndCourse(name, course))
+            throw new DuplicateEntityException("Subject with these name and course already exists");
+
         var subject = new Subject();
         subject.setCourse(course);
         subject.setName(name);

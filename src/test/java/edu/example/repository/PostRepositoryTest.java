@@ -1,22 +1,17 @@
 package edu.example.repository;
 
+import edu.example.TestContext;
 import edu.example.model.*;
-import edu.example.web.config.MinioTestConfig;
-import edu.example.web.config.PostgresTestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 
 import java.sql.Timestamp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
-@ContextConfiguration(initializers = {MinioTestConfig.Initializer.class, PostgresTestConfig.Initializer.class})
-public class PostRepositoryTest {
+public class PostRepositoryTest extends TestContext {
 
     @Autowired
     PostRepository postRepository;
@@ -34,6 +29,7 @@ public class PostRepositoryTest {
         postRepository.deleteAll();
         folderRepository.deleteAll();
         subjectRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -41,7 +37,7 @@ public class PostRepositoryTest {
         // given
         var subject = subjectRepository.save(new Subject(0L, "physics", 3));
         var folder = folderRepository.save(new Folder(0L, subject, FolderType.TEST));
-        var user = userRepository.save(new User(0L, "1234", "someone", "3534534", Role.USER));
+        var user = userRepository.save(new User(0L, "1234", "someone", "3534534", Role.USER, false));
 
         // when
         var newPost = postRepository.save(new Post(0L, folder,
@@ -57,7 +53,7 @@ public class PostRepositoryTest {
     public void getPostByFolder() {
         // given
         var subject = subjectRepository.save(new Subject(0L, "physics", 3));
-        var user = userRepository.save(new User(0L, "1234", "someone", "3534534", Role.USER));
+        var user = userRepository.save(new User(0L, "1234", "someone", "3534534", Role.USER, false));
 
         var folderTest = folderRepository.save(new Folder(0L, subject, FolderType.TEST));
         var postTest1 = postRepository.save(new Post(0L, folderTest,

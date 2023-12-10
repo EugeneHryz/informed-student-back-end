@@ -1,22 +1,17 @@
 package edu.example.repository;
 
+import edu.example.TestContext;
 import edu.example.model.*;
-import edu.example.web.config.MinioTestConfig;
-import edu.example.web.config.PostgresTestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 
 import java.sql.Timestamp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
-@ContextConfiguration(initializers = {MinioTestConfig.Initializer.class, PostgresTestConfig.Initializer.class})
-public class FileRepositoryTest {
+public class FileRepositoryTest extends TestContext {
 
     @Autowired
     FileRepository fileRepository;
@@ -37,6 +32,7 @@ public class FileRepositoryTest {
         postRepository.deleteAll();
         folderRepository.deleteAll();
         subjectRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -44,7 +40,7 @@ public class FileRepositoryTest {
         // given
         var subject = subjectRepository.save(new Subject(0L, "physics", 3));
         var folder = folderRepository.save(new Folder(0L, subject, FolderType.TEST));
-        var user = userRepository.save(new User(0L, "1234", "someone", "3534534", Role.USER));
+        var user = userRepository.save(new User(0L, "1234", "someone", "3534534", Role.USER, false));
         var post = postRepository.save(new Post(0L, folder,
                 Timestamp.valueOf("1970-01-01 00:00:00"), "Post text", user, null, null));
 

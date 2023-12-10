@@ -1,23 +1,20 @@
 package edu.example.repository;
 
+import edu.example.TestContext;
 import edu.example.model.Folder;
 import edu.example.model.FolderType;
 import edu.example.model.Subject;
-import edu.example.web.config.MinioTestConfig;
-import edu.example.web.config.PostgresTestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
+
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
-@ContextConfiguration(initializers = {MinioTestConfig.Initializer.class, PostgresTestConfig.Initializer.class})
-public class FolderRepositoryTest {
+public class FolderRepositoryTest extends TestContext {
 
     @Autowired
     FolderRepository folderRepository;
@@ -60,9 +57,10 @@ public class FolderRepositoryTest {
 
         // then
         assertEquals(2, result.size());
-        var resArr = result.toArray(new Folder[0]);
-        assertTrue((resArr[0].getId() == physicsTests.getId() && resArr[1].getId() == physicsNotes.getId())
-            || (resArr[1].getId() == physicsTests.getId() && resArr[0].getId() == physicsNotes.getId()));
+        assertTrue(result.stream().anyMatch(folder -> Objects.equals(folder.getId(),
+                physicsTests.getId())));
+        assertTrue(result.stream().anyMatch(folder -> Objects.equals(folder.getId(),
+                physicsNotes.getId())));
     }
 
 }
