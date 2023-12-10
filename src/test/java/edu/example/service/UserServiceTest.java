@@ -42,11 +42,11 @@ public class UserServiceTest extends TestContext {
                 "mail@address.com", "username", "password"));
         authService.register(new RegisterRequestDto(
                 "mail1@address.com", "username1", "password"));
-        userService.updateUserBanStatus(
+        userService.updateUser(
                 userService.getUsers(new UserRequestDto().toPredicate(), 0, 2).get()
                         .filter(user -> user.getUsername().equals("username"))
                         .findAny().get().getId(),
-                true);  // Banned 'username'
+                true, null);  // Banned 'username'
 
         // when
         var usersPage = userService.getUsers(new UserRequestDto().toPredicate(), 0, 2);
@@ -64,11 +64,11 @@ public class UserServiceTest extends TestContext {
                 "mail@address.com", "username", "password"));
         authService.register(new RegisterRequestDto(
                 "mail1@address.com", "username1", "password"));
-        userService.updateUserBanStatus(
+        userService.updateUser(
                 userService.getUsers(new UserRequestDto().toPredicate(), 0, 2).get()
                         .filter(user -> user.getUsername().equals("username"))
                         .findFirst().get().getId(),
-                true);  // Banned 'username'
+                true, null);  // Banned 'username'
 
         // when
         var dto = new UserRequestDto();
@@ -104,7 +104,7 @@ public class UserServiceTest extends TestContext {
     @Test
     void updateUserBanStatusNotFound() {
         assertThrows(EntityNotFoundException.class, () ->
-                userService.updateUserBanStatus(0L, true));
+                userService.updateUser(0L, true, null));
     }
 
     @ParameterizedTest
@@ -115,11 +115,11 @@ public class UserServiceTest extends TestContext {
                 "mail@address.com", "username", "password"));
 
         // when
-        userService.updateUserBanStatus(
+        userService.updateUser(
                 userService.getUsers(new UserRequestDto().toPredicate(), 0, 2).get()
                         .filter(user -> user.getUsername().equals("username"))
                         .findFirst().get().getId(),
-                banStatus);  // Banned 'username'
+                banStatus, null);  // Banned 'username'
 
         // then
         var usersPage = userService.getUsers(new UserRequestDto().toPredicate(), 0, 1);

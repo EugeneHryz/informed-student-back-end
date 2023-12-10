@@ -27,6 +27,11 @@ public class AdminUserConfig {
         if (isNull(username) || isNull(password)) {
             throw new RuntimeException("Admin user incorrect credentials (null)");
         }
+        var userCheckUsername = userRepository.findByUsername(username);
+        if (userCheckUsername.isPresent() && !userCheckUsername.get().getRole().equals(Role.ADMIN)) {
+            throw new RuntimeException("Provided admin username already occupied by non-admin");
+        }
+
         var adminUsers = userRepository.findByRole(Role.ADMIN);
         if (adminUsers.size() > 1) {
             throw new RuntimeException("Unexpected: there is more than one administrator");
