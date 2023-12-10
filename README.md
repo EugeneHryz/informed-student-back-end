@@ -37,11 +37,7 @@ minioadmin:minioadmin
 
 Команда запустит Postgres в контейнере
 ```
-docker run --name {Container name} 
-    -e POSTGRES_USER={Postgres username}
-    -e POSTGRES_PASSWORD={Postgres password}
-    -e POSTGRES_DB=postgres
-    -d postgres
+docker run --name {Container name} -e POSTGRES_USER={Postgres username} -e POSTGRES_PASSWORD={Postgres password} -e POSTGRES_DB=postgres -d postgres
 ```
 
 #### Tests
