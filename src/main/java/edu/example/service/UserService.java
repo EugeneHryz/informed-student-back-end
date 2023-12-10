@@ -1,5 +1,6 @@
 package edu.example.service;
 
+import com.querydsl.core.types.Predicate;
 import edu.example.exception.EntityNotFoundException;
 import edu.example.model.User;
 import edu.example.repository.TokenRepository;
@@ -13,9 +14,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-import static java.util.Objects.nonNull;
 
 @Service
 @RequiredArgsConstructor
@@ -27,24 +25,12 @@ public class UserService {
     private final CommentService commentService;
     private final UserInfoRepository userInfoRepository;
 
-    public Page<User> getUsers(Boolean isBanned, int pageNumber, int pageSize) {
+    public Page<User> getUsers(Predicate predicate, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(
-                Sort.Order.desc("id")
+                Sort.Order.asc("id")
         ));
 
-        if (nonNull(isBanned)) {
-            return userRepository.findAllByIsBanned(isBanned, pageable);
-        }
-        return userRepository.findAll(pageable);
-    }
-
-    /**
-     * Finds all Users with username or email matching regex
-     * @param searchTerm regex
-     * @return Matching Users
-     */
-    public List<User> getUsersByUsernameOrEmail(String searchTerm) {
-        return userRepository.findByUsernameOrEmail(searchTerm);
+        return userRepository.findAll(predicate, pageable);
     }
 
     public User getUserByUsername(String username) {

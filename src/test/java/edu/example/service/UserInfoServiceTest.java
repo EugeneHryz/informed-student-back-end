@@ -3,19 +3,16 @@ package edu.example.service;
 
 import edu.example.TestContext;
 import edu.example.dto.auth.RegisterRequestDto;
+import edu.example.dto.user.UserRequestDto;
 import edu.example.dto.userInfo.UserInfoCreateUpdateDto;
 import edu.example.exception.EntityNotFoundException;
 import edu.example.exception.UnprocessableEntityException;
 import edu.example.model.Gender;
-import edu.example.model.UserInfo;
 import edu.example.repository.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.sql.Date;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -47,7 +44,9 @@ public class UserInfoServiceTest  extends TestContext {
     void createUserInfo() throws UnprocessableEntityException {
         // given
         authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
-        var user = userService.getUsers(false, 0, 1).get().findFirst().get();
+        var dto = new UserRequestDto();
+        dto.setIsBanned(false);
+        var user = userService.getUsers(dto.toPredicate(), 0, 1).get().findFirst().get();
 
         // when
         var userInfo = userInfoService.createOrUpdateUserInfo(new UserInfoCreateUpdateDto(
@@ -66,7 +65,9 @@ public class UserInfoServiceTest  extends TestContext {
     void getUserInfo() throws UnprocessableEntityException {
         // given
         authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
-        var user = userService.getUsers(false, 0, 1).get().findFirst().get();
+        var dto = new UserRequestDto();
+        dto.setIsBanned(false);
+        var user = userService.getUsers(dto.toPredicate(), 0, 1).get().findFirst().get();
 
         userInfoService.createOrUpdateUserInfo(new UserInfoCreateUpdateDto(
                 "2000-01-01", "MALE", 1,
@@ -87,7 +88,9 @@ public class UserInfoServiceTest  extends TestContext {
     void getUserInfoNotFound() throws UnprocessableEntityException {
         // given
         authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
-        var user = userService.getUsers(false, 0, 1).get().findFirst().get();
+        var dto = new UserRequestDto();
+        dto.setIsBanned(false);
+        var user = userService.getUsers(dto.toPredicate(), 0, 1).get().findFirst().get();
 
         userInfoService.createOrUpdateUserInfo(new UserInfoCreateUpdateDto(
                 "2000-01-01", "MALE", 1,
@@ -102,7 +105,9 @@ public class UserInfoServiceTest  extends TestContext {
     void updateUserInfo() throws UnprocessableEntityException {
         // given
         authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
-        var user = userService.getUsers(false, 0, 1).get().findFirst().get();
+        var dto = new UserRequestDto();
+        dto.setIsBanned(false);
+        var user = userService.getUsers(dto.toPredicate(), 0, 1).get().findFirst().get();
 
         var userInfo = userInfoService.createOrUpdateUserInfo(new UserInfoCreateUpdateDto(
                 "2000-01-01", "MALE", 1,

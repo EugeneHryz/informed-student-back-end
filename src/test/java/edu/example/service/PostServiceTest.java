@@ -2,6 +2,7 @@ package edu.example.service;
 
 import edu.example.TestContext;
 import edu.example.dto.auth.RegisterRequestDto;
+import edu.example.dto.user.UserRequestDto;
 import edu.example.exception.EntityNotFoundException;
 import edu.example.exception.UnprocessableEntityException;
 import edu.example.model.FolderType;
@@ -57,7 +58,9 @@ public class PostServiceTest extends TestContext {
         var folder = folderService.createFolder(subject.getId(), FolderType.NOTES);
 
         authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
-        var user = userService.getUsers(false, 0, 1).get().findFirst().get();
+        var dto = new UserRequestDto();
+        dto.setIsBanned(false);
+        var user = userService.getUsers(dto.toPredicate(), 0, 1).get().findFirst().get();
 
         // when
         var post = postService.createPost(folder.getId(), "Text", user);
@@ -77,7 +80,9 @@ public class PostServiceTest extends TestContext {
         var folder = folderService.createFolder(subject.getId(), FolderType.NOTES);
 
         authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
-        var user = userService.getUsers(false, 0, 1).get().findFirst().get();
+        var dto = new UserRequestDto();
+        dto.setIsBanned(false);
+        var user = userService.getUsers(dto.toPredicate(), 0, 1).get().findFirst().get();
 
         var post_id = postService.createPost(folder.getId(), "Text", user).getId();
 
@@ -106,7 +111,9 @@ public class PostServiceTest extends TestContext {
         var folder = folderService.createFolder(subject.getId(), FolderType.NOTES);
 
         authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
-        var user = userService.getUsers(false, 0, 1).get().findFirst().get();
+        var dto = new UserRequestDto();
+        dto.setIsBanned(false);
+        var user = userService.getUsers(dto.toPredicate(), 0, 1).get().findFirst().get();
 
         var post_id = postService.createPost(folder.getId(), "Text", user).getId();
 
@@ -132,7 +139,9 @@ public class PostServiceTest extends TestContext {
         var folder = folderService.createFolder(subject.getId(), FolderType.NOTES);
 
         authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
-        var user = userService.getUsers(false, 0, 1).get().findFirst().get();
+        var dto = new UserRequestDto();
+        dto.setIsBanned(false);
+        var user = userService.getUsers(dto.toPredicate(), 0, 1).get().findFirst().get();
 
         var post_id = postService.createPost(folder.getId(), "Text", user).getId();
 
@@ -162,7 +171,9 @@ public class PostServiceTest extends TestContext {
         var folder1 = folderService.createFolder(subject.getId(), FolderType.LITERATURE);
 
         authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
-        var user = userService.getUsers(false, 0, 1).get().findFirst().get();
+        var dto = new UserRequestDto();
+        dto.setIsBanned(false);
+        var user = userService.getUsers(dto.toPredicate(), 0, 1).get().findFirst().get();
 
         var post_id = postService.createPost(folder.getId(), "Text", user).getId();
 
