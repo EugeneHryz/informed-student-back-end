@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserInfoController {
 
     private final UserInfoService userInfoService;
-
     private final UserInfoMapper userInfoMapper;
 
     @Autowired
@@ -64,8 +63,8 @@ public class UserInfoController {
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "415", description = "File type not supported")
     })
-    public void setUserProfileImage(@RequestParam String username,
-                                    @RequestPart("image") MultipartFile image) {
-        userInfoService.setUserProfileImage(username, image);
+    public void setUserProfileImage(@RequestPart("image") MultipartFile image,
+                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userInfoService.setUserProfileImage(userDetails.getUsername(), image);
     }
 }
