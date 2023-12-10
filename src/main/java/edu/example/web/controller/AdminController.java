@@ -1,10 +1,11 @@
 package edu.example.web.controller;
 
 import edu.example.dto.PageResponse;
-import edu.example.dto.admin.UpdateUserBanRequestDto;
+import edu.example.dto.admin.UpdateUserRequestDto;
 import edu.example.dto.user.UserRequestDto;
 import edu.example.dto.user.UserResponseDto;
 import edu.example.mapper.UserMapper;
+import edu.example.model.Role;
 import edu.example.service.AdminService;
 import edu.example.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +18,7 @@ import org.hibernate.validator.constraints.Range;
 import org.quartz.SchedulerException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import static java.util.Objects.isNull;
 
 
 @RestController
@@ -69,14 +71,15 @@ public class AdminController {
         return response;
     }
 
-    @PostMapping("/users/ban")
-    @Operation(description = "Update user ban status")
+    @PostMapping("/users")
+    @Operation(description = "Update user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Updated successfully"),
             @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
     })
-    public UserResponseDto updateUserBanStatus(@RequestBody @Valid UpdateUserBanRequestDto dto) {
-        return userMapper.toUserResponseDto(userService.updateUserBanStatus(dto.getUserId(), dto.isBanned()));
+    public UserResponseDto updateUser(@RequestBody @Valid UpdateUserRequestDto dto) {
+        Role role = isNull(dto.getRole()) ? null : Role.valueOf(dto.getRole());
+        return userMapper.toUserResponseDto(userService.updateUser(dto.getUserId(), dto.getIsBanned(), role));
     }
 
     @GetMapping("/users/{username}")
