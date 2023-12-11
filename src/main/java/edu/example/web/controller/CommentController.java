@@ -1,7 +1,10 @@
 package edu.example.web.controller;
 
+import com.github.dockerjava.api.model.Reachability;
 import edu.example.dto.PageResponse;
 import edu.example.dto.comment.CommentResponseDto;
+import edu.example.dto.comment.CommentRevisionResponseDto;
+import edu.example.dto.comment.CreateCommentReplyRequestDto;
 import edu.example.dto.comment.CreateCommentRequestDto;
 import edu.example.mapper.CommentMapper;
 import edu.example.model.Comment;
@@ -16,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -39,8 +44,34 @@ public class CommentController {
                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
         Comment comment = commentService.createComment(createCommentRequestDto,
                 userDetails.getUser());
-
         return commentMapper.toCommentResponseDto(comment);
+    }
+
+    @PostMapping("/reply")
+    @Operation(description = "Add reply to a comment")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Added successfully"),
+            @ApiResponse(responseCode = "404", description = "Comment not found"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized"),
+            @ApiResponse(responseCode = "400", description = "Parsing / validation error")
+    })
+    public CommentResponseDto addReplyToComment(@RequestBody @Valid CreateCommentReplyRequestDto dto,
+                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Comment reply = commentService.addReplyToComment(dto, userDetails.getUser());
+        return commentMapper.toCommentResponseDto(reply);
+    }
+
+    @GetMapping("/reply")
+    @Operation(description = "Receive replies to a comment")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Сomment not found")
+    })
+    public PageResponse<CommentResponseDto> getCommentReplies(@RequestParam Long commentId,
+                                                              @RequestParam(defaultValue = "0") int page,
+                                                              @RequestParam(defaultValue = "5") int size) {
+        var result = commentService.getCommentReplies(commentId, page, size);
+        return PageResponse.of(result, commentMapper::toCommentResponseDto);
     }
 
     @PreAuthorize("hasAuthority('MODERATOR') || @commentSecurity.isAllowedToModifyComment(authentication, #id)")
@@ -62,7 +93,37 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Comment not found")
     })
     public CommentResponseDto get(@RequestParam Long id) {
-        return commentMapper.toCommentResponseDto(commentService.getComment(id));
+        Comment comment = commentService.getComment(id);
+        Integer numberOfReplies = commentService.countNumberOfReplies(comment.getId());
+        return commentMapper.toCommentResponseDto(comment, numberOfReplies);
+    }
+
+    @PreAuthorize("@commentSecurity.isAllowedToModifyComment(authentication, #id)")
+    @PutMapping
+    @Operation(description = "Update comment")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "404", description = "Comment not found")
+    })
+    public CommentResponseDto update(@RequestParam Long id,
+                                     @RequestParam String text) {
+        var updatedComment = commentService.updateComment(id, text);
+        return commentMapper.toCommentResponseDto(updatedComment);
+    }
+
+    @PreAuthorize("hasAuthority('MODERATOR')")
+    @GetMapping("/revision")
+    @Operation(description = "Get comment's revisions")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "404", description = "Comment not found")
+    })
+    public List<CommentRevisionResponseDto> getCommentHistory(@RequestParam Long id) {
+        var revisions = commentService.getCommentHistory(id);
+        var revisionsList = revisions.stream().toList();
+        return commentMapper.toCommentRevisionResponseDto(revisionsList);
     }
 
     @GetMapping("/filterByPost")
@@ -71,18 +132,13 @@ public class CommentController {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Post not found")
     })
-    public PageResponse<CommentResponseDto> findCommentsByPost(@RequestParam Long postId,
-                                                               @RequestParam(defaultValue = "0") int page,
-                                                               @RequestParam(defaultValue = "5") int size) {
+    public PageResponse<CommentResponseDto> getCommentsByPost(@RequestParam Long postId,
+                                                              @RequestParam(defaultValue = "0") int page,
+                                                              @RequestParam(defaultValue = "5") int size) {
         var result = commentService.getCommentsByPost(page, size, postId);
-
-        var response = new PageResponse<CommentResponseDto>();
-        response.setPageSize(result.getSize());
-        response.setPageNumber(result.getNumber());
-        response.setTotalPages(result.getTotalPages());
-        response.setTotalSize(result.getTotalElements());
-        response.setContent(result.getContent().stream().map(commentMapper::toCommentResponseDto).toList());
-
-        return response;
+        return PageResponse.of(result, c -> {
+            Integer numberOfReplies = commentService.countNumberOfReplies(c.getId());
+            return commentMapper.toCommentResponseDto(c, numberOfReplies);
+        });
     }
 }

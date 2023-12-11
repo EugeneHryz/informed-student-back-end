@@ -2,6 +2,11 @@
 
 ### How to run
 
+### Fast Run
+
+1. Необходимо запустить .bat файл в папке docker (либо в случае не Windows самостоятельно прописать в консоли: docker-compose -f docker/docker-compose-dev.yml up), что локально поднимет MinIO и Postgres.
+2. Установить "dev" профиль Spring в среде разработки (по умолчанию логин и пароль админа: admin). 
+
 #### Server
 
 Для запуска сервера необходимо указать реквизиты для доступа к Postgres и MinIO, настройки SpringSecurity:
@@ -37,11 +42,7 @@ minioadmin:minioadmin
 
 Команда запустит Postgres в контейнере
 ```
-docker run --name {Container name} 
-    -e POSTGRES_USER={Postgres username}
-    -e POSTGRES_PASSWORD={Postgres password}
-    -e POSTGRES_DB=postgres
-    -d postgres
+docker run --name {Container name} -e POSTGRES_USER={Postgres username} -e POSTGRES_PASSWORD={Postgres password} -e POSTGRES_DB=postgres -d postgres
 ```
 
 #### Tests

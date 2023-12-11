@@ -1,9 +1,11 @@
 package edu.example.web.controller;
 
 import edu.example.dto.PageResponse;
-import edu.example.dto.admin.UpdateUserBanRequestDto;
+import edu.example.dto.admin.UpdateUserRequestDto;
+import edu.example.dto.user.UserRequestDto;
 import edu.example.dto.user.UserResponseDto;
 import edu.example.mapper.UserMapper;
+import edu.example.model.Role;
 import edu.example.service.AdminService;
 import edu.example.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,8 +18,8 @@ import org.hibernate.validator.constraints.Range;
 import org.quartz.SchedulerException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import static java.util.Objects.isNull;
 
-import java.util.List;
 
 @RestController
 @PreAuthorize("hasAuthority('ADMIN')")
@@ -51,47 +53,26 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    @Operation(description = "Get users by ban status")
+    @Operation(description = "Get users")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
             @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
     })
-    public PageResponse<UserResponseDto> getUsers(@RequestParam(required = false) Boolean isBanned,
-                                                  @RequestParam(defaultValue = "0") int page,
-                                                  @RequestParam(defaultValue = "5") int size) {
-        var result = userService.getUsers(isBanned, page, size);
+    public PageResponse<UserResponseDto> getUsers(@RequestBody UserRequestDto filter) {
+        var result = userService.getUsers(filter.toPredicate(), filter.getPageNumber(), filter.getPageSize());
 
-        var response = new PageResponse<UserResponseDto>();
-        response.setPageSize(result.getSize());
-        response.setPageNumber(result.getNumber());
-        response.setTotalPages(result.getTotalPages());
-        response.setTotalSize(result.getTotalElements());
-        response.setContent(result.getContent().stream().map(userMapper::toUserResponseDto).toList());
-
-        return response;
+        return PageResponse.of(result, userMapper::toUserResponseDto);
     }
 
-    @GetMapping("/users/search")
-    @Operation(description = "Search users by their email or username")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
-    })
-    public List<UserResponseDto> getUsersByUsernameOrEmail(@RequestParam String search) {
-        var result = userService.getUsersByUsernameOrEmail(search);
-        return result.stream()
-                .map(userMapper::toUserResponseDto)
-                .toList();
-    }
-
-    @PostMapping("/users/ban")
-    @Operation(description = "Update user ban status")
+    @PostMapping("/users")
+    @Operation(description = "Update user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Updated successfully"),
             @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
     })
-    public UserResponseDto updateUserBanStatus(@RequestBody @Valid UpdateUserBanRequestDto dto) {
-        return userMapper.toUserResponseDto(userService.updateUserBanStatus(dto.getUserId(), dto.isBanned()));
+    public UserResponseDto updateUser(@RequestBody @Valid UpdateUserRequestDto dto) {
+        Role role = isNull(dto.getRole()) ? null : Role.valueOf(dto.getRole());
+        return userMapper.toUserResponseDto(userService.updateUser(dto.getUserId(), dto.getIsBanned(), role));
     }
 
     @GetMapping("/users/{username}")

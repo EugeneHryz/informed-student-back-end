@@ -2,6 +2,7 @@ package edu.example.service;
 
 import edu.example.TestContext;
 import edu.example.dto.auth.RegisterRequestDto;
+import edu.example.dto.user.UserRequestDto;
 import edu.example.exception.EntityNotFoundException;
 import edu.example.exception.UnprocessableEntityException;
 import edu.example.repository.TokenRepository;
@@ -41,14 +42,14 @@ public class UserServiceTest extends TestContext {
                 "mail@address.com", "username", "password"));
         authService.register(new RegisterRequestDto(
                 "mail1@address.com", "username1", "password"));
-        userService.updateUserBanStatus(
-                userService.getUsers(null, 0, 2).get()
+        userService.updateUser(
+                userService.getUsers(new UserRequestDto().toPredicate(), 0, 2).get()
                         .filter(user -> user.getUsername().equals("username"))
                         .findAny().get().getId(),
-                true);  // Banned 'username'
+                true, null);  // Banned 'username'
 
         // when
-        var usersPage = userService.getUsers(null, 0, 2);
+        var usersPage = userService.getUsers(new UserRequestDto().toPredicate(), 0, 2);
 
         // then
         assertEquals(2, usersPage.getTotalElements());
@@ -63,14 +64,16 @@ public class UserServiceTest extends TestContext {
                 "mail@address.com", "username", "password"));
         authService.register(new RegisterRequestDto(
                 "mail1@address.com", "username1", "password"));
-        userService.updateUserBanStatus(
-                userService.getUsers(null, 0, 2).get()
+        userService.updateUser(
+                userService.getUsers(new UserRequestDto().toPredicate(), 0, 2).get()
                         .filter(user -> user.getUsername().equals("username"))
                         .findFirst().get().getId(),
-                true);  // Banned 'username'
+                true, null);  // Banned 'username'
 
         // when
-        var usersPage = userService.getUsers(false, 0, 2);
+        var dto = new UserRequestDto();
+        dto.setIsBanned(false);
+        var usersPage = userService.getUsers(dto.toPredicate(), 0, 2);
 
         // then
         assertEquals(1, usersPage.getTotalElements());
@@ -84,11 +87,11 @@ public class UserServiceTest extends TestContext {
                 "mail@address.com", "username", "password"));
 
         // when
-        userService.deleteUser(userService.getUsers(null, 0, 1)
+        userService.deleteUser(userService.getUsers(new UserRequestDto().toPredicate(), 0, 1)
                 .get().toList().get(0).getId());
 
         // then
-        var usersPage = userService.getUsers(null, 0, 1);
+        var usersPage = userService.getUsers(new UserRequestDto().toPredicate(), 0, 1);
         assertFalse(usersPage.stream().anyMatch(user -> user.getUsername().equals("username")));
     }
 
@@ -101,7 +104,7 @@ public class UserServiceTest extends TestContext {
     @Test
     void updateUserBanStatusNotFound() {
         assertThrows(EntityNotFoundException.class, () ->
-                userService.updateUserBanStatus(0L, true));
+                userService.updateUser(0L, true, null));
     }
 
     @ParameterizedTest
@@ -112,14 +115,14 @@ public class UserServiceTest extends TestContext {
                 "mail@address.com", "username", "password"));
 
         // when
-        userService.updateUserBanStatus(
-                userService.getUsers(null, 0, 2).get()
+        userService.updateUser(
+                userService.getUsers(new UserRequestDto().toPredicate(), 0, 2).get()
                         .filter(user -> user.getUsername().equals("username"))
                         .findFirst().get().getId(),
-                banStatus);  // Banned 'username'
+                banStatus, null);  // Banned 'username'
 
         // then
-        var usersPage = userService.getUsers(null, 0, 1);
+        var usersPage = userService.getUsers(new UserRequestDto().toPredicate(), 0, 1);
         assertEquals(1, usersPage.getTotalElements());
         assertTrue(usersPage.stream().anyMatch(user -> user.getUsername().equals("username")));
         assertEquals(banStatus, usersPage.stream().filter(user -> user.getUsername().equals("username"))
@@ -135,7 +138,9 @@ public class UserServiceTest extends TestContext {
                 "mail1@address.com", "another", "password"));
 
         // when
-        var usersList = userService.getUsersByUsernameOrEmail("one");
+        var dto = new UserRequestDto();
+        dto.setSearchTerm("one");
+        var usersList = userService.getUsers(dto.toPredicate(), 0, 1).getContent();
 
         // then
         assertEquals(1, usersList.size());
@@ -151,7 +156,9 @@ public class UserServiceTest extends TestContext {
                 "mail1@address.com", "another", "password"));
 
         // when
-        var usersList = userService.getUsersByUsernameOrEmail("mail1@address.com");
+        var dto = new UserRequestDto();
+        dto.setSearchTerm("mail1@address.com");
+        var usersList = userService.getUsers(dto.toPredicate(), 0, 1).getContent();
 
         // then
         assertEquals(1, usersList.size());
