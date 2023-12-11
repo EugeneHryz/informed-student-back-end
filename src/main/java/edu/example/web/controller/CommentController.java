@@ -1,6 +1,5 @@
 package edu.example.web.controller;
 
-import com.github.dockerjava.api.model.Reachability;
 import edu.example.dto.PageResponse;
 import edu.example.dto.comment.CommentResponseDto;
 import edu.example.dto.comment.CommentRevisionResponseDto;
@@ -86,13 +85,13 @@ public class CommentController {
         commentService.deleteComment(id);
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     @Operation(description = "Receive comment by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Comment not found")
     })
-    public CommentResponseDto get(@RequestParam Long id) {
+    public CommentResponseDto get(@PathVariable Long id) {
         Comment comment = commentService.getComment(id);
         Integer numberOfReplies = commentService.countNumberOfReplies(comment.getId());
         return commentMapper.toCommentResponseDto(comment, numberOfReplies);

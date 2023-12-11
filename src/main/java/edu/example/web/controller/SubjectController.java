@@ -55,13 +55,13 @@ public class SubjectController {
         subjectService.deleteSubject(id);
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     @Operation(description = "Receive subject by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Subject not found")
     })
-    public SubjectResponseDto get(@RequestParam Long id) {
+    public SubjectResponseDto get(@PathVariable Long id) {
         return subjectMapper.toSubjectResponseDto(subjectService.getSubject(id));
     }
 
