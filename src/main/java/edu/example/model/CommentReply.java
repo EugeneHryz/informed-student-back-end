@@ -13,16 +13,16 @@ import lombok.NoArgsConstructor;
 public class CommentReply {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comment_reply_seq")
-    @SequenceGenerator(name = "comment_reply_seq", sequenceName = "comment_reply_id_seq", allocationSize = 1)
+    @Column(name = "reply_id")
     private Long id;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "reply_id")
+    private Comment reply;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id", nullable = false)
     private Comment comment;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "reply_id", nullable = false)
-    private Comment reply;
 
 }
