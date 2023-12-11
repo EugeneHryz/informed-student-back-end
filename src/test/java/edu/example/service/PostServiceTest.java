@@ -7,7 +7,9 @@ import edu.example.exception.EntityNotFoundException;
 import edu.example.exception.UnprocessableEntityException;
 import edu.example.model.FolderType;
 import edu.example.repository.*;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Timestamp;
@@ -87,7 +89,7 @@ public class PostServiceTest extends TestContext {
         var post_id = postService.createPost(folder.getId(), "Text", user).getId();
 
         // when
-        var post = postService.getPost(post_id);
+        var post = postService.getPostById(post_id);
 
         // then
         assertEquals("Text", post.getText());
@@ -122,7 +124,7 @@ public class PostServiceTest extends TestContext {
 
         // then
         assertThrows(EntityNotFoundException.class,
-                () -> postService.getPost(post_id));
+                () -> postService.getPostById(post_id));
     }
 
     @Test
@@ -149,7 +151,7 @@ public class PostServiceTest extends TestContext {
         postService.updatePost(post_id, folder.getId(), "New text");
 
         // then
-        var post = postService.getPost(post_id);
+        var post = postService.getPostById(post_id);
         assertEquals("New text", post.getText());
         assertEquals(folder.getId(), post.getFolder().getId());
         assertEquals("username", post.getUser().getUsername());
@@ -178,7 +180,7 @@ public class PostServiceTest extends TestContext {
         var post_id = postService.createPost(folder.getId(), "Text", user).getId();
 
         // when
-        var page = postService.getPostsByFolder(0, 1, folder.getId());
+        var page = postService.getPosts(0, 1, folder.getId());
 
         // then
         assertEquals(1, page.getTotalElements());

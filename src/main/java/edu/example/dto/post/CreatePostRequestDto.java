@@ -1,17 +1,15 @@
 package edu.example.dto.post;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.hibernate.validator.constraints.Range;
-
 
 @Data
 @AllArgsConstructor
 public class CreatePostRequestDto {
-    @NotNull
-    @Range
+
     private Long folderId;
 
+    @NotEmpty
     private String text;
 }
