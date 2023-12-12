@@ -1,5 +1,6 @@
 package edu.example.service;
 
+import edu.example.model.Role;
 import edu.example.scheduling.DeleteOldCommentsJob;
 import lombok.RequiredArgsConstructor;
 import org.quartz.*;
@@ -8,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.List;
 
 import static edu.example.scheduling.SchedulingConfiguration.DELETE_OLD_COMMENTS_JOB_NAME;
 import static edu.example.scheduling.SchedulingConfiguration.OLD_COMMENTS_DELETION_AGE_KEY;
@@ -58,4 +61,7 @@ public class AdminService {
         scheduler.addJob(deleteCommentsJobDetail, true);
     }
 
+    public List<Role> getAllRoles() {
+        return Arrays.asList(Role.values());
+    }
 }

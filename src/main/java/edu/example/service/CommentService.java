@@ -107,8 +107,10 @@ public class CommentService {
         return commentRepliesPage.map(CommentReply::getReply);
     }
 
+    @Transactional
     public void deleteComment(Long id) {
         commentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Comment not found"));
+        commentReplyRepository.deleteById(id);
         commentRepository.deleteById(id);
     }
 

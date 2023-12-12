@@ -68,7 +68,7 @@ public class FolderController {
     }
 
     @GetMapping("/types")
-    @Operation(description = "Receive existing types")
+    @Operation(description = "Receive existing folder types")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully")
     })

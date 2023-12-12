@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import static java.util.Objects.nonNull;
 
 
@@ -55,8 +56,8 @@ public class UserService {
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        if (user.getRole().equals(Role.ADMIN)) {
-            throw new AccessDeniedException("Updating admin is not allowed");
+        if (user.getRole().equals(Role.ADMIN) || (nonNull(role) && role == Role.ADMIN)) {
+            throw new AccessDeniedException("Operation not allowed");
         }
 
         if (nonNull(isBanned)) {

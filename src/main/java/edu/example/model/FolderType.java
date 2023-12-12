@@ -3,7 +3,8 @@ package edu.example.model;
 public enum FolderType {
     TEST("Контрольная работа"),
     NOTES("Конспекты семинаров"),
-    LITERATURE("Литература");
+    LITERATURE("Литература"),
+    EXAM("Экзамен");
 
     private final String displayName;
 

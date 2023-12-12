@@ -18,6 +18,9 @@ import org.hibernate.validator.constraints.Range;
 import org.quartz.SchedulerException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 import static java.util.Objects.isNull;
 
 
@@ -58,13 +61,13 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
             @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
     })
-    public PageResponse<UserResponseDto> getUsers(@RequestBody UserRequestDto filter) {
+    public PageResponse<UserResponseDto> getUsers(UserRequestDto filter) {
         var result = userService.getUsers(filter.toPredicate(), filter.getPageNumber(), filter.getPageSize());
 
         return PageResponse.of(result, userMapper::toUserResponseDto);
     }
 
-    @PostMapping("/users")
+    @PutMapping("/users")
     @Operation(description = "Update user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Updated successfully"),
@@ -94,5 +97,17 @@ public class AdminController {
     })
     public UserResponseDto getUserByCommentId(@RequestParam Long id) {
         return userMapper.toUserResponseDto(userService.getUserByCommentId(id));
+    }
+
+    @GetMapping("/users/roles")
+    @Operation(description = "Get all available roles")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized")
+    })
+    public List<String> getAllRoles() {
+        return adminService.getAllRoles().stream()
+                .map(Enum::name)
+                .toList();
     }
 }
