@@ -12,4 +12,5 @@ public interface CommentReplyRepository extends JpaRepository<CommentReply, Long
     Page<CommentReply> findByCommentId(Long commentId, Pageable pageable);
 
     Integer countByCommentId(Long commentId);
+
 }
