@@ -50,7 +50,7 @@ public class PostController {
         return postMapper.toPostResponseDto(post);
     }
 
-    @PreAuthorize("hasAuthority('MODERATOR') || @postSecurity.isAllowedToModifyPost(authentication, #id)")
+    @PreAuthorize("hasAuthority('ADMIN') || @postSecurity.isAllowedToModifyPost(authentication, #id)")
     @DeleteMapping("/{id}")
     @Operation(description = "Delete post by id")
     @ApiResponses(value = {

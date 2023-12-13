@@ -30,6 +30,6 @@ public class PostSecurity {
         boolean hasModeratorAuthority = auth.getAuthorities().stream()
                 .anyMatch(ga -> ga.getAuthority().equals(Role.MODERATOR.name()));
 
-        return !Objects.isNull(dto.getFolderId()) || hasModeratorAuthority;
+        return Objects.nonNull(dto.getFolderId()) || hasModeratorAuthority;
     }
 }

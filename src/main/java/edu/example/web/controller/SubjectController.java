@@ -27,7 +27,7 @@ public class SubjectController {
     private final SubjectMapper subjectMapper;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('MODERATOR')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(description = "Create subject")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created successfully"),
@@ -44,7 +44,7 @@ public class SubjectController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('MODERATOR')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(description = "Delete subject by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Deleted successfully"),
