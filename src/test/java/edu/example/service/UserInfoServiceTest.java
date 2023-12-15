@@ -8,11 +8,13 @@ import edu.example.dto.userInfo.UserInfoCreateUpdateDto;
 import edu.example.exception.EntityNotFoundException;
 import edu.example.exception.UnprocessableEntityException;
 import edu.example.model.Gender;
-import edu.example.repository.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -24,20 +26,13 @@ public class UserInfoServiceTest  extends TestContext {
     UserService userService;
     @Autowired
     AuthService authService;
-
     @Autowired
-    UserInfoRepository userInfoRepository;
-    @Autowired
-    TokenRepository tokenRepository;
-    @Autowired
-    UserRepository userRepository;
+    JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     @AfterEach
     void clear() {
-        userInfoRepository.deleteAll();
-        tokenRepository.deleteAll();
-        userRepository.deleteAll();
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "user_info", "token", "users");
     }
 
     @Test

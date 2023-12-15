@@ -8,6 +8,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 
 import java.util.Objects;
 
@@ -18,15 +20,15 @@ public class FolderRepositoryTest extends TestContext {
 
     @Autowired
     FolderRepository folderRepository;
-
     @Autowired
     SubjectRepository subjectRepository;
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     @AfterEach
     public void clear() {
-        folderRepository.deleteAll();
-        subjectRepository.deleteAll();
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "folder", "subject");
     }
 
     @Test

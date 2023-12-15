@@ -4,7 +4,7 @@
 
 ### Fast Run
 
-1. Необходимо запустить .bat файл в папке docker (либо в случае не Windows самостоятельно прописать в консоли: docker-compose -f docker/docker-compose-dev.yml up), что локально поднимет MinIO и Postgres.
+1. Необходимо запустить .bat файл в папке docker (либо в случае не Windows самостоятельно прописать в консоли: docker compose -f docker/docker-compose-dev.yml up), что локально поднимет MinIO и Postgres.
 2. Установить "dev" профиль Spring в среде разработки (по умолчанию логин и пароль админа: admin). 
 
 #### Server

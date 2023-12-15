@@ -19,8 +19,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 
 @RestController
 @RequestMapping("/comment")
@@ -119,10 +117,11 @@ public class CommentController {
             @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
             @ApiResponse(responseCode = "404", description = "Comment not found")
     })
-    public List<CommentRevisionResponseDto> getCommentHistory(@RequestParam Long id) {
-        var revisions = commentService.getCommentHistory(id);
-        var revisionsList = revisions.stream().toList();
-        return commentMapper.toCommentRevisionResponseDto(revisionsList);
+    public PageResponse<CommentRevisionResponseDto> getCommentHistory(@RequestParam Long id,
+                                                                      @RequestParam(defaultValue = "0") int page,
+                                                                      @RequestParam(defaultValue = "5") int size) {
+        var revisionPage = commentService.getCommentHistory(id, page, size);
+        return PageResponse.of(revisionPage, commentMapper::toCommentRevisionResponseDto);
     }
 
     @GetMapping("/filterByPost")

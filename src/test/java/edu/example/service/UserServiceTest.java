@@ -5,14 +5,14 @@ import edu.example.dto.auth.RegisterRequestDto;
 import edu.example.dto.user.UserRequestDto;
 import edu.example.exception.EntityNotFoundException;
 import edu.example.exception.UnprocessableEntityException;
-import edu.example.repository.TokenRepository;
-import edu.example.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,15 +24,12 @@ public class UserServiceTest extends TestContext {
     AuthService authService;
 
     @Autowired
-    UserRepository userRepository;
-    @Autowired
-    TokenRepository tokenRepository;
+    JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     @AfterEach
     void clear() {
-        tokenRepository.deleteAll();
-        userRepository.deleteAll();
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "token", "users");
     }
 
     @Test
