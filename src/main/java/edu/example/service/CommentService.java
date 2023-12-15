@@ -14,7 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.history.Revisions;
+import org.springframework.data.history.Revision;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -137,8 +137,9 @@ public class CommentService {
         commentRepository.deleteAllByCreatedAtBefore(timestamp);
     }
 
-    public Revisions<Long, Comment> getCommentHistory(Long id) {
-        return commentRepository.findRevisions(id);
+    public Page<Revision<Long, Comment>> getCommentHistory(Long commentId, int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return commentRepository.findRevisions(commentId, pageable);
     }
 
 }

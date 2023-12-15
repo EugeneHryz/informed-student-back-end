@@ -34,7 +34,7 @@ public class UserInfoController {
     @Operation(summary = "Saves or updates user's info")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Saved/updated successfully"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized"),
             @ApiResponse(responseCode = "400", description = "Parsing / validation error")
     })
     public UserInfoResponseDto createOrUpdateUserInfo(@RequestBody @Valid UserInfoCreateUpdateDto userInfo,
@@ -47,7 +47,7 @@ public class UserInfoController {
     @Operation(summary = "Retrieve user's info")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized"),
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "400", description = "Parsing / validation error")
     })
@@ -59,7 +59,7 @@ public class UserInfoController {
     @Operation(summary = "Set user's image")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Uploaded successfully"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized"),
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "415", description = "File type not supported")
     })

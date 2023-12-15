@@ -6,8 +6,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,14 +25,13 @@ public class PostRepositoryTest extends TestContext {
     SubjectRepository subjectRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     @AfterEach
     public void clear() {
-        postRepository.deleteAll();
-        folderRepository.deleteAll();
-        subjectRepository.deleteAll();
-        userRepository.deleteAll();
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "post", "folder", "subject", "users");
     }
 
     @Test
@@ -40,12 +42,13 @@ public class PostRepositoryTest extends TestContext {
         var user = userRepository.save(new User(0L, "1234", "someone", "3534534", Role.USER, false));
 
         // when
+        Instant now = Instant.now();
         var newPost = postRepository.save(new Post(0L, folder,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post text", user, null, null));
+                Timestamp.from(now), "Post text", user, null, null));
 
         // then
         assertEquals(folder.getId(), newPost.getFolder().getId());
-        assertEquals(new Timestamp(System.currentTimeMillis()).getTime(), newPost.getCreatedAt().getTime(), 10);
+        assertEquals(Timestamp.from(now).getTime(), newPost.getCreatedAt().getTime(), 10);
         assertEquals("Post text", newPost.getText());
     }
 

@@ -4,13 +4,14 @@ import edu.example.TestContext;
 import edu.example.exception.DuplicateEntityException;
 import edu.example.exception.EntityNotFoundException;
 import edu.example.model.FolderType;
-import edu.example.repository.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -23,16 +24,12 @@ public class FolderServiceTest extends TestContext {
     SubjectService subjectService;
 
     @Autowired
-    FolderRepository folderRepository;
-
-    @Autowired
-    SubjectRepository subjectRepository;
+    JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     @AfterEach
     void clear() {
-        folderRepository.deleteAll();
-        subjectRepository.deleteAll();
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "folder", "subject");
     }
 
     @Test

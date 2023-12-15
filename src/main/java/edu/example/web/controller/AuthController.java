@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
-@Tag(name = "Authorisation", description = "Register / login")
+@Tag(name = "Authorization", description = "Register / login")
 public class AuthController {
 
     private final AuthService authService;

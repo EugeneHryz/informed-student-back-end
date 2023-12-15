@@ -7,13 +7,14 @@ import edu.example.dto.user.UserRequestDto;
 import edu.example.exception.EntityNotFoundException;
 import edu.example.exception.UnprocessableEntityException;
 import edu.example.model.FolderType;
-import edu.example.repository.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -36,28 +37,13 @@ public class CommentServiceTest extends TestContext {
     AuthService authService;
 
     @Autowired
-    TokenRepository tokenRepository;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    SubjectRepository subjectRepository;
-    @Autowired
-    FolderRepository folderRepository;
-    @Autowired
-    PostRepository postRepository;
-    @Autowired
-    CommentRepository commentRepository;
+    JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     @AfterEach
     void clear() {
-        commentRepository.deleteAll();
-        postRepository.deleteAll();
-        folderRepository.deleteAll();
-        subjectRepository.deleteAll();
-
-        tokenRepository.deleteAll();
-        userRepository.deleteAll();
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "comment", "post", "folder",
+                "subject", "token", "users");
     }
 
     @ParameterizedTest
