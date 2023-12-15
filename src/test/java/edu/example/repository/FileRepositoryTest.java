@@ -6,6 +6,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 
 import java.sql.Timestamp;
 
@@ -24,15 +26,13 @@ public class FileRepositoryTest extends TestContext {
     SubjectRepository subjectRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     @AfterEach
     public void clear() {
-        fileRepository.deleteAll();
-        postRepository.deleteAll();
-        folderRepository.deleteAll();
-        subjectRepository.deleteAll();
-        userRepository.deleteAll();
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "file", "post", "folder", "subject", "users");
     }
 
     @Test

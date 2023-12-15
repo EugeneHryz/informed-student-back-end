@@ -13,7 +13,11 @@ public class CommentResponseDto {
 
     private Timestamp createdAt;
 
+    private Timestamp updatedAt;
+
     private UserDto user;
 
     private String text;
+
+    private Integer numberOfReplies;
 }

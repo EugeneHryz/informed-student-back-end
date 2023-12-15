@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserInfoController {
 
     private final UserInfoService userInfoService;
-
     private final UserInfoMapper userInfoMapper;
 
     @Autowired
@@ -35,7 +34,7 @@ public class UserInfoController {
     @Operation(summary = "Saves or updates user's info")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Saved/updated successfully"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized"),
             @ApiResponse(responseCode = "400", description = "Parsing / validation error")
     })
     public UserInfoResponseDto createOrUpdateUserInfo(@RequestBody @Valid UserInfoCreateUpdateDto userInfo,
@@ -48,7 +47,7 @@ public class UserInfoController {
     @Operation(summary = "Retrieve user's info")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized"),
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "400", description = "Parsing / validation error")
     })
@@ -60,12 +59,12 @@ public class UserInfoController {
     @Operation(summary = "Set user's image")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Uploaded successfully"),
-            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorised"),
+            @ApiResponse(responseCode = "403", description = "Insufficient rights / unauthorized"),
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "415", description = "File type not supported")
     })
-    public void setUserProfileImage(@RequestParam String username,
-                                    @RequestPart("image") MultipartFile image) {
-        userInfoService.setUserProfileImage(username, image);
+    public void setUserProfileImage(@RequestPart("image") MultipartFile image,
+                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userInfoService.setUserProfileImage(userDetails.getUsername(), image);
     }
 }

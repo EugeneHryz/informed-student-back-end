@@ -2,7 +2,6 @@ package edu.example.service;
 
 import edu.example.TestContext;
 import edu.example.scheduling.SchedulingConfiguration;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;

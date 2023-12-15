@@ -19,10 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.Objects;
 
 import static java.util.Objects.nonNull;
-
 
 @Service
 @RequiredArgsConstructor
@@ -33,33 +32,70 @@ public class PostService {
     private final FileStorageService fileStorageService;
 
     /**
-     * Get posts in the given folder, sorted by creation time.
+     * Get posts, sorted by creation time. If folderId is null, then we will get news posts. Otherwise -
+     * study materials posts
      * @param pageNumber page number, starting with 0
      * @param pageSize size of elements on the page
-     * @param folderId id of a folder
+     * @param folderId id of a folder (null to get news posts)
      * @return Page object with information such as total number of posts, total number of pages, etc.
      */
-    public Page<Post> getPostsByFolder(int pageNumber, int pageSize, long folderId) {
+    public Page<Post> getPosts(int pageNumber, int pageSize, Long folderId) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(
                 Sort.Order.desc("createdAt")
         ));
-        return postRepository.findByFolderId(folderId, pageable);
+
+        if (Objects.nonNull(folderId)) {
+            return postRepository.findByFolderId(folderId, pageable);
+        }
+        return postRepository.findByFolderIsNull(pageable);
     }
 
     /**
-     * Creates post and saves files to object storage. File representation in the database (FileModel)
-     * is linked to a post.
+     * Creates a post and saves files to object storage. File representation in the database (FileModel)
+     * is linked to a post. Post can be linked to a folder (study materials post) or it can be a standalone post (news post).
      * @param folderId id of a folder in which post is created
-     * @param user user who creates the post
+     * @param author author who creates the post
      * @param text text of the post
      * @param files files to upload and associate with a post
      * @return post object
      */
-    public Post createPostWithFiles(Long folderId, User user, String text, List<MultipartFile> files) {
+    public Post createPost(Long folderId, User author, String text, List<MultipartFile> files) {
+        return createPostWithFiles(folderId, author, text, files);
+    }
+
+    public Post getPostById(Long id) {
+        return postRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Post not found"));
+    }
+
+    public Post createPost(Long folderId, String text, User author) {
         var post = new Post();
         post.setFolder(folderService.getFolder(folderId));
         post.setText(text);
-        post.setUser(user);
+        post.setUser(author);
+        return postRepository.save(post);
+    }
+
+    public Post updatePost(Long id, Long folder, String text) {
+        var post = postRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+        post.setFolder(folderService.getFolder(folder));
+        post.setText(text);
+        return postRepository.save(post);
+    }
+
+    public void deletePost(Long id) {
+        postRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Post not found"));
+        postRepository.deleteById(id);
+    }
+
+    private Post createPostWithFiles(Long folderId, User author, String text, List<MultipartFile> files) {
+        var post = new Post();
+        if (folderId != null) {
+            post.setFolder(folderService.getFolder(folderId));
+        }
+        post.setText(text);
+        post.setUser(author);
+
         List<FileModel> fileModels = new ArrayList<>();
         if (nonNull(files) && !files.isEmpty()) {
             for (var file : files) {
@@ -94,30 +130,5 @@ public class PostService {
             });
         }
         return post;
-    }
-
-    public Post getPost(Long id) {
-        return postRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Post not found"));
-    }
-
-    public Post createPost(Long folderId, String text, User author) {
-        var post = new Post();
-        post.setFolder(folderService.getFolder(folderId));
-        post.setText(text);
-        post.setUser(author);
-        return postRepository.save(post);
-    }
-
-    public Post updatePost(Long id, Long folder, String text) {
-        var post = postRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("No post by this id"));
-        post.setFolder(folderService.getFolder(folder));
-        post.setText(text);
-        return postRepository.save(post);
-    }
-
-    public void deletePost(Long id) {
-        postRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Post not found"));
-        postRepository.deleteById(id);
     }
 }

@@ -1,7 +1,9 @@
 package edu.example.web.security.method;
 
+import edu.example.dto.post.CreatePostRequestDto;
 import edu.example.exception.EntityNotFoundException;
 import edu.example.model.Post;
+import edu.example.model.Role;
 import edu.example.repository.PostRepository;
 import edu.example.web.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +24,12 @@ public class PostSecurity {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
         return Objects.equals(post.getUser().getId(), userDetails.getUser().getId());
+    }
+
+    public boolean isAllowedToCreateNewsPost(Authentication auth, CreatePostRequestDto dto) {
+        boolean hasModeratorAuthority = auth.getAuthorities().stream()
+                .anyMatch(ga -> ga.getAuthority().equals(Role.MODERATOR.name()));
+
+        return Objects.nonNull(dto.getFolderId()) || hasModeratorAuthority;
     }
 }

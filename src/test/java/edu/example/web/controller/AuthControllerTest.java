@@ -5,11 +5,8 @@ import edu.example.TestContext;
 import edu.example.dto.auth.AuthUserDto;
 import edu.example.dto.auth.LoginRequestDto;
 import edu.example.dto.auth.RegisterRequestDto;
-import edu.example.repository.TokenRepository;
-import edu.example.repository.UserRepository;
 import edu.example.service.AuthService;
 import edu.example.web.security.SecurityConstants;
-import io.minio.MinioClient;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,8 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -37,17 +35,14 @@ class AuthControllerTest extends TestContext {
     @Autowired
     ObjectMapper objectMapper;
     @Autowired
-    UserRepository userRepository;
-    @Autowired
-    TokenRepository tokenRepository;
-    @Autowired
     AuthService authService;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     @AfterEach
     public void clear() {
-        tokenRepository.deleteAll();
-        userRepository.deleteAll();
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "token", "users");
     }
 
     @Test

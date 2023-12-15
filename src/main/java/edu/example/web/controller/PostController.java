@@ -31,27 +31,26 @@ public class PostController {
     private final PostService postService;
     private final PostMapper postMapper;
 
-    @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
-    @Operation(description = "Create post")
+    @PreAuthorize("@postSecurity.isAllowedToCreateNewsPost(authentication, #dto)")
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @Operation(description = "Create a post")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created successfully"),
             @ApiResponse(responseCode = "404", description = "Folder not found"),
             @ApiResponse(responseCode = "400", description = "Parsing / validation error")
     })
-    public PostResponseDto create(@RequestPart("post") @Valid CreatePostRequestDto createPostRequestDto,
-                                  @RequestPart(value = "files", required = false) List<MultipartFile> files,
-                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
-        Post post = postService.createPostWithFiles(
-                createPostRequestDto.getFolderId(),
+    public PostResponseDto createPost(@RequestPart("post") @Valid CreatePostRequestDto dto,
+                                      @RequestPart(value = "files", required = false) List<MultipartFile> files,
+                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        Post post = postService.createPost(
+                dto.getFolderId(),
                 userDetails.getUser(),
-                createPostRequestDto.getText(),
+                dto.getText(),
                 files);
-
         return postMapper.toPostResponseDto(post);
     }
 
-    @PreAuthorize("hasAuthority('MODERATOR') || @postSecurity.isAllowedToModifyPost(authentication, #id)")
+    @PreAuthorize("hasAuthority('ADMIN') || @postSecurity.isAllowedToModifyPost(authentication, #id)")
     @DeleteMapping("/{id}")
     @Operation(description = "Delete post by id")
     @ApiResponses(value = {
@@ -63,34 +62,26 @@ public class PostController {
         postService.deletePost(id);
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     @Operation(description = "Receive post by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Post not found")
     })
-    public PostResponseDto get(@RequestParam Long id) {
-        return postMapper.toPostResponseDto(postService.getPost(id));
+    public PostResponseDto get(@PathVariable Long id) {
+        return postMapper.toPostResponseDto(postService.getPostById(id));
     }
 
-    @GetMapping("/filterByFolder")
-    @Operation(description = "Receive posts by folder")
+    @GetMapping
+    @Operation(description = "Receive posts")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Folder not found")
     })
-    public PageResponse<PostResponseDto> findPostsByFolder(@RequestParam Long folderId,
-                                                           @RequestParam(defaultValue = "0") int page,
-                                                           @RequestParam(defaultValue = "5") int size) {
-        var result = postService.getPostsByFolder(page, size, folderId);
-
-        var response = new PageResponse<PostResponseDto>();
-        response.setPageSize(result.getSize());
-        response.setPageNumber(result.getNumber());
-        response.setTotalPages(result.getTotalPages());
-        response.setTotalSize(result.getTotalElements());
-        response.setContent(result.getContent().stream().map(postMapper::toPostResponseDto).toList());
-
-        return response;
+    public PageResponse<PostResponseDto> findPosts(@RequestParam(required = false) Long folderId,
+                                                   @RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "5") int size) {
+        var result = postService.getPosts(page, size, folderId);
+        return PageResponse.of(result, postMapper::toPostResponseDto);
     }
 }

@@ -6,8 +6,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -24,15 +27,13 @@ public class CommentRepositoryTest extends TestContext {
     SubjectRepository subjectRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     @AfterEach
     public void clear() {
-        commentRepository.deleteAll();
-        postRepository.deleteAll();
-        folderRepository.deleteAll();
-        subjectRepository.deleteAll();
-        userRepository.deleteAll();
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "comment", "post", "folder", "subject", "users");
     }
 
     @Test
@@ -41,16 +42,17 @@ public class CommentRepositoryTest extends TestContext {
         var subject = subjectRepository.save(new Subject(0L, "physics", 3));
         var folder = folderRepository.save(new Folder(0L, subject, FolderType.TEST));
         var user = userRepository.save(new User(0L, "1234", "someone", "3534534", Role.USER, false));
+        Instant now = Instant.now();
         var post = postRepository.save(new Post(0L, folder,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Post text", user, null, null));
+                Timestamp.from(now), "Post text", user, null, null));
 
         // when
-        var newComment = commentRepository.save(new Comment(0L, post,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Comment text", user, false));
+        var newComment = commentRepository.save(new Comment(0L, post, Timestamp.from(now),
+                Timestamp.from(now), "Comment text", user, false));
 
         // then
         assertEquals(post.getId(), newComment.getPost().getId());
-        assertEquals(new Timestamp(System.currentTimeMillis()).getTime(), newComment.getCreatedAt().getTime(), 10);
+        assertEquals(Timestamp.from(Instant.now()).getTime(), newComment.getCreatedAt().getTime(), 10);
         assertEquals("Comment text", newComment.getText());
     }
 
@@ -63,15 +65,13 @@ public class CommentRepositoryTest extends TestContext {
 
         var post1 = postRepository.save(new Post(0L, folder,
                 Timestamp.valueOf("1970-01-01 00:00:00"), "Post1 text", user, null, null));
-        var comment1Post1 = commentRepository.save(new Comment(0L, post1,
+        var comment1Post1 = commentRepository.save(new Comment(0L, post1, Timestamp.valueOf("1970-01-01 00:00:00"),
                 Timestamp.valueOf("1970-01-01 00:00:00"), "Comment1 text", user, false));
-        var comment2Post1 = commentRepository.save(new Comment(0L, post1,
+        var comment2Post1 = commentRepository.save(new Comment(0L, post1, Timestamp.valueOf("1970-01-01 00:00:00"),
                 Timestamp.valueOf("1970-01-01 00:00:00"), "Comment2 text", user, false));
 
         var post2 = postRepository.save(new Post(0L, folder,
                 Timestamp.valueOf("1970-01-01 00:00:00"), "Post2 text", user, null, null));
-        var comment1Post2 = commentRepository.save(new Comment(0L, post2,
-                Timestamp.valueOf("1970-01-01 00:00:00"), "Comment3 text", user, false));
 
         // when
         var result = commentRepository.findCommentsByPostOrderByCreatedAt(post1);

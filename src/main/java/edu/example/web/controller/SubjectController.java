@@ -27,7 +27,7 @@ public class SubjectController {
     private final SubjectMapper subjectMapper;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('MODERATOR')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(description = "Create subject")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created successfully"),
@@ -44,7 +44,7 @@ public class SubjectController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('MODERATOR')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(description = "Delete subject by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Deleted successfully"),
@@ -55,13 +55,13 @@ public class SubjectController {
         subjectService.deleteSubject(id);
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     @Operation(description = "Receive subject by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Subject not found")
     })
-    public SubjectResponseDto get(@RequestParam Long id) {
+    public SubjectResponseDto get(@PathVariable Long id) {
         return subjectMapper.toSubjectResponseDto(subjectService.getSubject(id));
     }
 

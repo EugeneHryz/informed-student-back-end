@@ -2,12 +2,16 @@ package edu.example.service;
 
 import edu.example.TestContext;
 import edu.example.dto.auth.RegisterRequestDto;
+import edu.example.dto.user.UserRequestDto;
 import edu.example.exception.EntityNotFoundException;
 import edu.example.exception.UnprocessableEntityException;
 import edu.example.model.FolderType;
-import edu.example.repository.*;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -27,27 +31,13 @@ public class PostServiceTest extends TestContext {
     UserService userService;
     @Autowired
     AuthService authService;
-
     @Autowired
-    TokenRepository tokenRepository;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    SubjectRepository subjectRepository;
-    @Autowired
-    FolderRepository folderRepository;
-    @Autowired
-    PostRepository postRepository;
+    JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     @AfterEach
     void clear() {
-        postRepository.deleteAll();
-        folderRepository.deleteAll();
-        subjectRepository.deleteAll();
-
-        tokenRepository.deleteAll();
-        userRepository.deleteAll();
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "post", "folder", "subject", "token", "users");
     }
 
     @Test
@@ -57,7 +47,9 @@ public class PostServiceTest extends TestContext {
         var folder = folderService.createFolder(subject.getId(), FolderType.NOTES);
 
         authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
-        var user = userService.getUsers(false, 0, 1).get().findFirst().get();
+        var dto = new UserRequestDto();
+        dto.setIsBanned(false);
+        var user = userService.getUsers(dto.toPredicate(), 0, 1).get().findFirst().get();
 
         // when
         var post = postService.createPost(folder.getId(), "Text", user);
@@ -77,12 +69,14 @@ public class PostServiceTest extends TestContext {
         var folder = folderService.createFolder(subject.getId(), FolderType.NOTES);
 
         authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
-        var user = userService.getUsers(false, 0, 1).get().findFirst().get();
+        var dto = new UserRequestDto();
+        dto.setIsBanned(false);
+        var user = userService.getUsers(dto.toPredicate(), 0, 1).get().findFirst().get();
 
         var post_id = postService.createPost(folder.getId(), "Text", user).getId();
 
         // when
-        var post = postService.getPost(post_id);
+        var post = postService.getPostById(post_id);
 
         // then
         assertEquals("Text", post.getText());
@@ -106,7 +100,9 @@ public class PostServiceTest extends TestContext {
         var folder = folderService.createFolder(subject.getId(), FolderType.NOTES);
 
         authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
-        var user = userService.getUsers(false, 0, 1).get().findFirst().get();
+        var dto = new UserRequestDto();
+        dto.setIsBanned(false);
+        var user = userService.getUsers(dto.toPredicate(), 0, 1).get().findFirst().get();
 
         var post_id = postService.createPost(folder.getId(), "Text", user).getId();
 
@@ -115,7 +111,7 @@ public class PostServiceTest extends TestContext {
 
         // then
         assertThrows(EntityNotFoundException.class,
-                () -> postService.getPost(post_id));
+                () -> postService.getPostById(post_id));
     }
 
     @Test
@@ -132,7 +128,9 @@ public class PostServiceTest extends TestContext {
         var folder = folderService.createFolder(subject.getId(), FolderType.NOTES);
 
         authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
-        var user = userService.getUsers(false, 0, 1).get().findFirst().get();
+        var dto = new UserRequestDto();
+        dto.setIsBanned(false);
+        var user = userService.getUsers(dto.toPredicate(), 0, 1).get().findFirst().get();
 
         var post_id = postService.createPost(folder.getId(), "Text", user).getId();
 
@@ -140,7 +138,7 @@ public class PostServiceTest extends TestContext {
         postService.updatePost(post_id, folder.getId(), "New text");
 
         // then
-        var post = postService.getPost(post_id);
+        var post = postService.getPostById(post_id);
         assertEquals("New text", post.getText());
         assertEquals(folder.getId(), post.getFolder().getId());
         assertEquals("username", post.getUser().getUsername());
@@ -162,12 +160,14 @@ public class PostServiceTest extends TestContext {
         var folder1 = folderService.createFolder(subject.getId(), FolderType.LITERATURE);
 
         authService.register(new RegisterRequestDto("mail@address.com", "username", "password"));
-        var user = userService.getUsers(false, 0, 1).get().findFirst().get();
+        var dto = new UserRequestDto();
+        dto.setIsBanned(false);
+        var user = userService.getUsers(dto.toPredicate(), 0, 1).get().findFirst().get();
 
         var post_id = postService.createPost(folder.getId(), "Text", user).getId();
 
         // when
-        var page = postService.getPostsByFolder(0, 1, folder.getId());
+        var page = postService.getPosts(0, 1, folder.getId());
 
         // then
         assertEquals(1, page.getTotalElements());

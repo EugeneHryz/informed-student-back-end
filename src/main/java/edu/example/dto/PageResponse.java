@@ -2,9 +2,10 @@ package edu.example.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.Setter;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.function.Function;
 
 @Data
 public class PageResponse<T> {
@@ -22,4 +23,18 @@ public class PageResponse<T> {
     private int pageSize;
 
     private List<T> content;
+
+    public static <E, D> PageResponse<D> of(Page<E> page, Function<E, D> mapper) {
+        PageResponse<D> response = new PageResponse<D>();
+        response.setPageSize(page.getSize());
+        response.setPageNumber(page.getNumber());
+        response.setTotalPages(page.getTotalPages());
+        response.setTotalSize(page.getTotalElements());
+
+        List<D> content = page.getContent().stream()
+                .map(mapper)
+                .toList();
+        response.setContent(content);
+        return response;
+    }
 }

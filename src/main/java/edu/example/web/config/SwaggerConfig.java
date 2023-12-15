@@ -13,14 +13,9 @@ public class SwaggerConfig {
 
     private SecurityScheme createAPIKeyScheme() {
         return new SecurityScheme().type(SecurityScheme.Type.HTTP)
-                .bearerFormat("JWT")
-                .scheme("bearer");
-    }
-
-    private Info getInfo() {
-        return new Info()
-                .title("Informed Student API")
-                .version("1.0");
+                .name("jwtToken")
+                .type(SecurityScheme.Type.APIKEY)
+                .in(SecurityScheme.In.COOKIE);
     }
 
     @Bean
@@ -30,6 +25,12 @@ public class SwaggerConfig {
                 .components(new Components()
                         .addSecuritySchemes("Bearer Authentication", createAPIKeyScheme()))
                 .info(getInfo());
+    }
+
+    private Info getInfo() {
+        return new Info()
+                .title("Informed Student API")
+                .version("1.0");
     }
 }
 

@@ -20,14 +20,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 @RestControllerAdvice
 public class AppExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Object> handleException(ConstraintViolationException ex) {
+    @ExceptionHandler({ConstraintViolationException.class, UnsupportedOperationException.class})
+    public ResponseEntity<Object> handleException(RuntimeException ex) {
         Map<String, Object> body = new HashMap<>();
-        body.put("errors", List.of(ex.getMessage()));
+        body.put("error", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 

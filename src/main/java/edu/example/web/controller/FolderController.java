@@ -28,7 +28,6 @@ public class FolderController {
     private final FolderMapper folderMapper;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('MODERATOR')")
     @Operation(description = "Create folder")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created successfully"),
@@ -46,7 +45,7 @@ public class FolderController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('MODERATOR')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(description = "Delete folder by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Deleted successfully"),
@@ -68,7 +67,7 @@ public class FolderController {
     }
 
     @GetMapping("/types")
-    @Operation(description = "Receive existing types")
+    @Operation(description = "Receive existing folder types")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retrieved successfully")
     })

@@ -8,6 +8,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -20,10 +22,13 @@ public class SubjectServiceTest extends TestContext {
     @Autowired
     SubjectRepository subjectRepository;
 
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
     @BeforeEach
     @AfterEach
     void clear() {
-        subjectRepository.deleteAll();
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "subject");
     }
 
     @Test
