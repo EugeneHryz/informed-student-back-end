@@ -124,13 +124,17 @@ public class CommentService {
      * @param months number of months
      * @param days number of days
      */
+    @Transactional
     public void deleteCommentsOlderThen(int years, int months, int days) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.YEAR, -years);
         calendar.add(Calendar.MONTH, -months);
         calendar.add(Calendar.DATE, -days);
 
-        commentRepository.deleteAllByCreatedAtBefore(new Timestamp(calendar.getTimeInMillis()));
+        Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
+
+        commentReplyRepository.deleteAllByReply_CreatedAtBefore(timestamp);
+        commentRepository.deleteAllByCreatedAtBefore(timestamp);
     }
 
     public Revisions<Long, Comment> getCommentHistory(Long id) {
